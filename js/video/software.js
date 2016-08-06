@@ -24,7 +24,7 @@ MemoryAligned16.prototype.loadU16 = function(offset) {
 };
 
 MemoryAligned16.prototype.load32 = function(offset) {
-	return this.buffer[(offset >> 1) & ~1] | (this.buffer[(offset >> 1) | 1] << 16);
+	return this.buffer[offset >> 1] | (this.vram[(offset >> 1) | 1] << 16);
 };
 
 MemoryAligned16.prototype.store8 = function(offset, value) {
@@ -851,13 +851,7 @@ GameBoyAdvanceSoftwareRenderer.prototype.clearSubsets = function(mmu, regions) {
 		this.oam.overwrite(new Uint16Array(mmu.SIZE_OAM >> 1));
 		this.oam.video = this;
 	}
-};
-
-GameBoyAdvanceSoftwareRenderer.prototype.freeze = function() {
-};
-
-GameBoyAdvanceSoftwareRenderer.prototype.defrost = function(frost) {
-};
+}
 
 GameBoyAdvanceSoftwareRenderer.prototype.setBacking = function(backing) {
 	this.pixelData = backing;
@@ -908,8 +902,8 @@ GameBoyAdvanceSoftwareRenderer.prototype.writeBackgroundControl = function(bg, v
 	bgData.priority = value & 0x0003;
 	bgData.charBase = (value & 0x000C) << 12;
 	bgData.mosaic = value & 0x0040;
-	bgData.multipalette &= ~0x0080;
 	if (bg < 2 || this.backgroundMode == 0) {
+		bgData.multipalette &= ~0x0080;
 		bgData.multipalette |= value & 0x0080;
 	}
 	bgData.screenBase = (value & 0x1F00) << 3;

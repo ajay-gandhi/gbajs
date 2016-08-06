@@ -34,10 +34,7 @@ GameBoyAdvanceAudio.prototype.clear = function() {
 
 	this.enabled = false;
 	if (this.context) {
-		try {
-			this.jsAudio.disconnect(this.context.destination);
-		} catch (e) {
-		}
+		this.jsAudio.disconnect(this.context.destination);
 	}
 
 	this.enableChannel3 = false;
@@ -143,24 +140,10 @@ GameBoyAdvanceAudio.prototype.clear = function() {
 	this.writeChannel4FC(0);
 };
 
-GameBoyAdvanceAudio.prototype.freeze = function() {
-	return {
-		nextSample: this.nextSample
-	};
-};
-
-GameBoyAdvanceAudio.prototype.defrost = function(frost) {
-	this.nextSample = frost.nextSample;
-};
-
 GameBoyAdvanceAudio.prototype.pause = function(paused) {
 	if (this.context) {
 		if (paused) {
-			try {
-				this.jsAudio.disconnect(this.context.destination);
-			} catch (e) {
-				// Sigh
-			}
+			this.jsAudio.disconnect(this.context.destination);
 		} else if (this.enabled) {
 			this.jsAudio.connect(this.context.destination);
 		}
@@ -169,64 +152,63 @@ GameBoyAdvanceAudio.prototype.pause = function(paused) {
 
 GameBoyAdvanceAudio.prototype.updateTimers = function() {
 	var cycles = this.cpu.cycles;
-	if (!this.enabled || (cycles < this.nextEvent && cycles < this.nextSample)) {
+	if (!this.enabled || cycles < this.nextEvent) {
 		return;
 	}
 
-	if (cycles >= this.nextEvent) {
-		var channel = this.squareChannels[0];
-		this.nextEvent = Infinity;
-		if (channel.playing) {
-			this.updateSquareChannel(channel, cycles);
-		}
+	this.nextEvent += this.sampleInterval;
 
-		channel = this.squareChannels[1];
-		if (channel.playing) {
-			this.updateSquareChannel(channel, cycles);
-		}
+	var channel = this.squareChannels[0];
+	if (channel.playing) {
+		this.updateSquareChannel(channel, cycles);
+	}
 
-		if (this.enableChannel3 && this.playingChannel3) {
-			if (cycles >= this.channel3Next) {
-				if (this.channel3Write) {
-					var sample = this.waveData[this.channel3Pointer >> 1];
-					this.channel3Sample = (((sample >> ((this.channel3Pointer & 1) << 2)) & 0xF) - 0x8) / 8;
-					this.channel3Pointer = (this.channel3Pointer + 1);
-					if (this.channel3Dimension && this.channel3Pointer >= 64) {
-						this.channel3Pointer -= 64;
-					} else if (!this.channel3Bank && this.channel3Pointer >= 32) {
-						this.channel3Pointer -= 32;
-					} else if (this.channel3Pointer >= 64) {
-						this.channel3Pointer -= 32;
-					}
-				}
-				this.channel3Next += this.channel3Interval;
-				if (this.channel3Interval && this.nextEvent > this.channel3Next) {
-					this.nextEvent = this.channel3Next;
+	channel = this.squareChannels[1];
+	if (channel.playing) {
+		this.updateSquareChannel(channel, cycles);
+	}
+
+	if (this.enableChannel3 && this.playingChannel3) {
+		if (cycles >= this.channel3Next) {
+			if (this.channel3Write) {
+				var sample = this.waveData[this.channel3Pointer >> 1];
+				this.channel3Sample = (((sample >> ((this.channel3Pointer & 1) << 2)) & 0xF) - 0x8) / 8;
+				this.channel3Pointer = (this.channel3Pointer + 1);
+				if (this.channel3Dimension && this.channel3Pointer >= 64) {
+					this.channel3Pointer -= 64;
+				} else if (!this.channel3Bank && this.channel3Pointer >= 32) {
+					this.channel3Pointer -= 32;
+				} else if (this.channel3Pointer >= 64) {
+					this.channel3Pointer -= 32;
 				}
 			}
-			if (this.channel3Timed && cycles >= this.channel3End) {
-				this.playingChannel3 = false;
+			this.channel3Next += this.channel3Interval;
+			if (this.channel3Interval && this.nextEvent > this.channel3Next) {
+				this.nextEvent = this.channel3Next;
 			}
 		}
+		if (this.channel3Timed && cycles >= this.channel3End) {
+			this.playingChannel3 = false;
+		}
+	}
 
-		if (this.enableChannel4 && this.playingChannel4) {
-			if (this.channel4.timed && cycles >= this.channel4.end) {
-				this.playingChannel4 = false;
-			} else {
-				if (cycles >= this.channel4.next) {
-					this.channel4.lfsr >>= 1;
-					var sample = this.channel4.lfsr & 1;
-					this.channel4.lfsr |= (((this.channel4.lfsr >> 1) & 1) ^ sample) << (this.channel4.width - 1);
-					this.channel4.next += this.channel4.interval;
-					this.channel4.sample = (sample - 0.5) * 2 * this.channel4.volume;
-				}
-				this.updateEnvelope(this.channel4, cycles);
-				if (this.nextEvent > this.channel4.next) {
-					this.nextEvent = this.channel4.next;
-				}
-				if (this.channel4.timed && this.nextEvent > this.channel4.end) {
-					this.nextEvent = this.channel4.end;
-				}
+	if (this.enableChannel4 && this.playingChannel4) {
+		if (this.channel4.timed && cycles >= this.channel4.end) {
+			this.playingChannel4 = false;
+		} else {
+			if (cycles >= this.channel4.next) {
+				this.channel4.lfsr >>= 1;
+				var sample = this.channel4.lfsr & 1;
+				this.channel4.lfsr |= (((this.channel4.lfsr >> 1) & 1) ^ sample) << (this.channel4.width - 1);
+				this.channel4.next += this.channel4.interval;
+				this.channel4.sample = (sample - 0.5) * 2 * this.channel4.volume;
+			}
+			this.updateEnvelope(this.channel4, cycles);
+			if (this.nextEvent > this.channel4.next) {
+				this.nextEvent = this.channel4.next;
+			}
+			if (this.channel4.timed && this.nextEvent > this.channel4.end) {
+				this.nextEvent = this.channel4.end;
 			}
 		}
 	}
@@ -237,7 +219,7 @@ GameBoyAdvanceAudio.prototype.updateTimers = function() {
 	}
 
 	this.nextEvent = Math.ceil(this.nextEvent);
-	if ((this.nextEvent < cycles) || (this.nextSample < cycles)) {
+	if (this.nextEvent < cycles) {
 		// STM instructions may take a long time
 		this.updateTimers();
 	}
@@ -253,10 +235,7 @@ GameBoyAdvanceAudio.prototype.writeEnable = function(value) {
 		if (value) {
 			this.jsAudio.connect(this.context.destination);
 		} else {
-			try {
-				this.jsAudio.disconnect(this.context.destination);
-			} catch (e) {
-			}
+			this.jsAudio.disconnect(this.context.destination);
 		}
 	}
 };

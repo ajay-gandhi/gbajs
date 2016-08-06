@@ -16,8 +16,11 @@ h3 {
 	background-color: #2A2F32;
 }
 
-#screen {
+canvas {
 	background-color: gray;
+}
+
+#screen {
 	margin: 40px;
 }
 
@@ -43,11 +46,11 @@ section {
 	text-align: center;
 }
 
-ul, ol, #registers, #savestates {
+ul, ol, #registers {
 	padding: 10px;
 }
 
-#devtools, #registers, #savestates, #display {
+#devtools, #registers {
 	-webkit-box-orient: vertical;
 	-moz-box-orient: vertical;
 }
@@ -68,17 +71,6 @@ ul, ol, #registers, #savestates {
 	border-right: 1px solid #DADDE1;
 }
 
-#debugViewer {
-	text-align: center;
-	margin: 10px;
-	overflow: auto;
-	max-height: 50%;
-}
-
-#debugViewSelector {
-	display: block;
-}
-
 #memory {
 	white-space: nowrap;
 	margin: 0;
@@ -86,10 +78,6 @@ ul, ol, #registers, #savestates {
 	-moz-box-flex: 1;
 	max-height: 100%;
 	border-left: 1px solid #DADDE1;
-}
-
-#savestates ol > li {
-	display: inline;
 }
 
 #gprs {
@@ -119,7 +107,7 @@ ul, ol, #registers, #savestates {
 	width: 80px;
 }
 
-#registers ol, #savestates ol {
+#registers ol {
 	border: 1px solid #DADDE1;
 	padding: 8px;
 }
@@ -231,10 +219,4 @@ ul, ol, #registers, #savestates {
 
 .disabled {
 	color: #5C616F;
-}
-
-#saveState {
-	width: 240px;
-	margin: auto;
-	display: block;
 }

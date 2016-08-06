@@ -1,0 +1,54 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <title>GameBoy Advance</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="mobile.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  <script src="js/util.js"></script>
+  <script src="js/core.js"></script>
+  <script src="js/arm.js"></script>
+  <script src="js/thumb.js"></script>
+  <script src="js/mmu.js"></script>
+  <script src="js/io.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/video.js"></script>
+  <script src="js/video/proxy.js"></script>
+  <script src="js/video/software.js"></script>
+  <script src="js/irq.js"></script>
+  <script src="js/keypad.js"></script>
+  <script src="js/savedata.js"></script>
+  <script src="js/gpio.js"></script>
+  <script src="js/gba.js"></script>
+  <script src="resources/xhr.js"></script>
+</head>
+<body>
+  <canvas id="screen" width="480" height="320"></canvas>
+
+  <div id="controls">
+    <div class="dpad">
+      <button id="up">up</button>
+      <button id="down">down</button>
+      <button id="left">left</button>
+      <button id="right">right</button>
+    </div>
+    <div class="ab">
+      <button id="a">a</button>
+      <button id="b">b</button>
+    </div>
+    <div class="lr">
+      <button id="l">l</button>
+      <button id="r">r</button>
+    </div>
+    <div class="ss">
+      <button id="start">start</button>
+      <button id="select">select</button>
+    </div>
+  </div>
+  <div id="slider">
+    <p><span id="fps">0</span> frames per second</p>
+  </div>
+  <script src="gba_app.js"></script>
+</body>
+</html>

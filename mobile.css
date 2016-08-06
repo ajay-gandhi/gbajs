@@ -2,6 +2,12 @@
   outline: none;
   margin: 0px;
   padding: 0px;
+  -webkit-touch-callout: none
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 html, body {
   height: 100%;
@@ -21,6 +27,15 @@ footer {
   bottom: 20px;
 }
 
+#cover {
+  display: none;
+  position: fixed;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  background-color: #fff;
+}
 
 /**
  * Game Selection
@@ -70,3 +85,88 @@ ul#selections li:first-child {
 ul#selections li.hidden {
   display: hidden;
 }
+
+/**
+ * Game
+ */
+canvas {
+  border: 1px solid red;
+}
+button {
+  padding: 10px;
+}
+
+/**
+ * Controls
+ */
+#controls {
+  position: relative;
+}
+#controls * {
+  border: 1px solid red;
+}
+#controls button {
+  width: 60px;
+  height: 60px;
+  border-radius: 30px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+}
+#controls button:active {
+  width: 60px;
+  height: 60px;
+  border-radius: 30px;
+  background-color: #fff;
+  border: 1px solid #888;
+}
+
+#controls .ab {
+  position: absolute;
+  top: 0px;
+  right: 15px;
+  width: 130px;
+  height: 130px;
+}
+#controls .ab #a {
+  position: absolute;
+  top: 20px;
+  right: 0px;
+}
+#controls .ab #b {
+  position: absolute;
+  bottom: 20px;
+  left: 0px;
+}
+
+#controls .dpad {
+  position: relative;
+  left: 15px;
+  width: 170px;
+  height: 170px;
+}
+#controls .dpad #up {
+  position: absolute;
+  top: 0px;
+  left: 55px;
+}
+#controls .dpad #down {
+  position: absolute;
+  bottom: 0px;
+  left: 55px;
+}
+#controls .dpad #left {
+  position: absolute;
+  bottom: 55px;
+  left: 0px;
+}
+#controls .dpad #right {
+  position: absolute;
+  bottom: 55px;
+  right: 0px;
+}
+
+
+
+
+
+

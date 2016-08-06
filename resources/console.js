@@ -1,19 +1,30 @@
+function hex(number, leading, usePrefix) {
+	if (typeof(usePrefix) === 'undefined') {
+		usePrefix = true;
+	}
+	if (typeof(leading) === 'undefined') {
+		leading = 8;
+	}
+	var string = (number >>> 0).toString(16).toUpperCase();
+	leading -= string.length;
+	if (leading < 0)
+		return string;
+	return (usePrefix ? '0x' : '') + new Array(leading + 1).join('0') + string;
+}
+
 function Console(gba) {
 	this.cpu = gba.cpu;
 	this.gba = gba;
 	this.ul = document.getElementById('console');
 	this.gprs = document.getElementById('gprs');
 	this.memory = new Memory(gba.mmu);
+	this.updateGPRs();
+	this.updateCPSR();
 	this.breakpoints = [];
+	this.memory.refreshAll();
 	this.logQueue = [];
-
-	this.activeView = null;
-	this.paletteView = new PaletteViewer(gba.video.renderPath.palette);
-	this.tileView = new TileViewer(gba.video.renderPath.vram, gba.video.renderPath.palette);
-	this.update();
-
 	var self = this;
-	gba.setLogger(function (level, message) { self.log(level, message) });
+	gba.setLogger(function (message) { self.log(message) });
 	this.gba.doStep = function () { return self.testBreakpoints() };
 }
 
@@ -69,26 +80,9 @@ Console.prototype.updateCPSR = function() {
 	}
 }
 
-Console.prototype.log = function(level, message) {
-	switch (level) {
-	case this.gba.LOG_ERROR:
-		message = '[ERROR] ' + message;
-		break;
-	case this.gba.LOG_WARN:
-		message = '[WARN] ' + message;
-		break;
-	case this.gba.LOG_STUB:
-		message = '[STUB] ' + message;
-		break;
-	case this.gba.LOG_INFO:
-		message = '[INFO] ' + message;
-		break;
-	case this.gba.LOG_DEBUG:
-		message = '[DEBUG] ' + message;
-		break;
-	}
+Console.prototype.log = function(message) {
 	this.logQueue.push(message);
-	if (level == this.gba.LOG_ERROR) {
+	if (message.substring(0, '[ERROR]'.length) === '[ERROR]') {
 		this.pause();
 	}
 	if (!this.stillRunning) {
@@ -120,33 +114,14 @@ Console.prototype.flushLog = function() {
 
 }
 
-Console.prototype.update = function() {
-	this.updateGPRs();
-	this.updateCPSR();
-	this.memory.refreshAll();
-	if (this.activeView) {
-		this.activeView.redraw();
-	}
-}
-
-Console.prototype.setView = function(view) {
-	var container = document.getElementById('debugViewer');
-	while (container.hasChildNodes()) {
-		container.removeChild(container.lastChild);
-	}
-	if (view) {
-		view.insertChildren(container);
-		view.redraw();
-	}
-	this.activeView = view;
-}
-
 Console.prototype.step = function() {
 	try {
 		this.cpu.step();
-		this.update();
+		this.updateGPRs();
+		this.updateCPSR();
+		this.memory.refreshAll();
 	} catch (exception) {
-		this.log(this.gba.LOG_DEBUG, exception);
+		this.log(exception);
 		throw exception;
 	}
 }
@@ -169,7 +144,7 @@ Console.prototype.runVisible = function() {
 				self.flushLog();
 				setTimeout(run, 0);
 			} catch (exception) {
-				self.log(this.gba.LOG_DEBUG, exception);
+				self.log(exception);
 				self.pause();
 				throw exception;
 			}
@@ -219,13 +194,15 @@ Console.prototype.pause = function() {
 	var mem = document.getElementById('memory');
 	mem.removeAttribute('class');
 	regs.removeAttribute('class');
-	this.update();
+	this.updateGPRs();
+	this.updateCPSR();
+	this.memory.refreshAll();
 	this.flushLog();
 }
 
 Console.prototype.breakpointHit = function() {
 	this.pause();
-	this.log(this.gba.LOG_DEBUG, 'Hit breakpoint at ' + hex(this.cpu.gprs[this.cpu.PC]));
+	this.log('Hit breakpoint at ' + hex(this.cpu.gprs[this.cpu.PC]));
 }
 
 Console.prototype.addBreakpoint = function(addr) {
@@ -397,82 +374,3 @@ Memory.prototype.scrollTo = function(offset) {
 		this.ul.parentElement.scrollTop = this.scrollTop;
 	}
 }
-
-function PaletteViewer(palette) {
-	this.palette = palette;
-	this.view = document.createElement('canvas');
-	this.view.setAttribute('class', 'paletteView');
-	this.view.setAttribute('width', '240');
-	this.view.setAttribute('height', '500');
-}
-
-PaletteViewer.prototype.insertChildren = function(container) {
-	container.appendChild(this.view);
-}
-
-PaletteViewer.prototype.redraw = function() {
-	var context = this.view.getContext('2d');
-	context.clearRect(0, 0, this.view.width, this.view.height);
-	for (var p = 0; p < 2; ++p) {
-		for (var y = 0; y < 16; ++y) {
-			for (var x = 0; x < 16; ++x) {
-				var color = this.palette.loadU16((p * 256 + y * 16 + x) * 2);
-				var r = (color & 0x001F) << 3;
-				var g = (color & 0x03E0) >> 2;
-				var b = (color & 0x7C00) >> 7;
-				context.fillStyle = '#' + hex(r, 2, false) + hex(g, 2, false) + hex(b, 2, false);
-				context.fillRect(x * 15 + 1, y * 15 + p * 255 + 1, 13, 13);
-			}
-		}
-	}
-}
-
-function TileViewer(vram, palette) {
-	this.BG_MAP_WIDTH = 256;
-	this.vram = vram;
-	this.palette = palette;
-
-	this.view = document.createElement('canvas');
-	this.view.setAttribute('class', 'tileView');
-	this.view.setAttribute('width', '256');
-	this.view.setAttribute('height', '512');
-
-	this.activePalette = 0;
-}
-
-TileViewer.prototype.insertChildren = function(container) {
-	container.appendChild(this.view);
-};
-
-TileViewer.prototype.redraw = function() {
-	var context = this.view.getContext('2d');
-	var data = context.createImageData(this.BG_MAP_WIDTH, 512);
-	var t = 0;
-	for (var y = 0; y < 512; y += 8) {
-		for (var x = 0; x < this.BG_MAP_WIDTH; x += 8) {
-			this.drawTile(data.data, t, this.activePalette, x + y * this.BG_MAP_WIDTH, this.BG_MAP_WIDTH);
-			++t;
-		}
-	}
-	context.putImageData(data, 0, 0);
-};
-
-TileViewer.prototype.drawTile = function(data, tile, palette, offset, stride) {
-	for (var j = 0; j < 8; ++j) {
-		var memOffset = tile << 5;
-		memOffset |= j << 2;
-
-		var row = this.vram.load32(memOffset);
-		for (var i = 0; i < 8; ++i) {
-			var index = (row >> (i << 2)) & 0xF;
-			var color = this.palette.loadU16((index << 1) + (palette << 5));
-			var r = (color & 0x001F) << 3;
-			var g = (color & 0x03E0) >> 2;
-			var b = (color & 0x7C00) >> 7;
-			data[(offset + i + stride * j) * 4 + 0] = r;
-			data[(offset + i + stride * j) * 4 + 1] = g;
-			data[(offset + i + stride * j) * 4 + 2] = b;
-			data[(offset + i + stride * j) * 4 + 3] = 255;
-		}
-	}
-};
