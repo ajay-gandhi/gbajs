@@ -2,6 +2,7 @@
   outline: none;
   margin: 0px;
   padding: 0px;
+  -webkit-tap-highlight-color: none;
   -webkit-touch-callout: none
   -webkit-user-select: none;
   -khtml-user-select: none;
@@ -102,71 +103,99 @@ button {
 #controls {
   position: relative;
 }
-#controls * {
-  border: 1px solid red;
-}
 #controls button {
-  width: 60px;
-  height: 60px;
-  border-radius: 30px;
   background-color: #fff;
   border: 1px solid #ccc;
 }
 #controls button:active {
-  width: 60px;
-  height: 60px;
-  border-radius: 30px;
-  background-color: #fff;
   border: 1px solid #888;
 }
 
-#controls .ab {
+.ab {
   position: absolute;
-  top: 0px;
+  top: 50px;
   right: 15px;
   width: 130px;
   height: 130px;
 }
-#controls .ab #a {
+.ab button {
+  width: 60px;
+  height: 60px;
+  border-radius: 30px;
+}
+.ab #a {
   position: absolute;
   top: 20px;
   right: 0px;
 }
-#controls .ab #b {
+.ab #b {
   position: absolute;
   bottom: 20px;
   left: 0px;
 }
 
-#controls .dpad {
-  position: relative;
+.dpad {
+  position: absolute;
+  top: 50px;
   left: 15px;
   width: 170px;
   height: 170px;
 }
-#controls .dpad #up {
+.dpad button {
+  width: 60px;
+  height: 60px;
+  border-radius: 20px;
+}
+.dpad #up {
   position: absolute;
   top: 0px;
   left: 55px;
 }
-#controls .dpad #down {
+.dpad #down {
   position: absolute;
   bottom: 0px;
   left: 55px;
 }
-#controls .dpad #left {
+.dpad #left {
   position: absolute;
   bottom: 55px;
   left: 0px;
 }
-#controls .dpad #right {
+.dpad #right {
   position: absolute;
   bottom: 55px;
   right: 0px;
 }
 
+.lr {
+  position: absolute;
+  width: 100%;
+  top: 0px;
+}
+.lr button {
+  width: 80px;
+  height: 45px;
+  border-radius: 10px;
+}
+.lr #l {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+}
+.lr #r {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+}
 
-
-
-
-
+.ss {
+  position: absolute;
+  top: 255px;
+  width: 100%;
+  text-align: center;
+}
+.ss button {
+  border-radius: 5px;
+  width: 80px;
+  height: 35px;
+}

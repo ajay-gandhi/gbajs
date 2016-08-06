@@ -40,10 +40,11 @@ $(document).ready(function() {
     gba.setCanvas(canvas, w, h);
 
     gba.logLevel = gba.LOG_ERROR;
-    gba.reportFPS = function(fps) {
-      var counter = document.getElementById('fps');
-      counter.textContent = Math.floor(fps);
-    };
+    // report fps
+    // gba.reportFPS = function(fps) {
+    //   var counter = document.getElementById('fps');
+    //   counter.textContent = Math.floor(fps);
+    // };
 
     loadRom('resources/bios.bin', function(bios) {
       gba.setBios(bios);
@@ -70,7 +71,7 @@ $(document).ready(function() {
       runCommands = [];
       fadeOut('preload', 'ingame');
       fadeOut('instructions', null, true);
-      gba.runStable();
+      // gba.runStable();
     });
 
   } else {

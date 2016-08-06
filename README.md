@@ -4,9 +4,20 @@ GBA.js
 GameBoy Advance emulator in the browser. This fork is intended for mobile
 browsers.
 
+## TODO
+
+* Setup canvas size on landscape
+* Setup buttons on landscape
+* Canvas size small on mobile, okay on desktop
+* Create save game functionality
+  * Add to menu after choosing game
+  * Put in URL for saving
+* Add button to go back to game browser in gba.html
+
 > See fork source for information on emulator
 
 ## License
+
 Copyright © 2012 – 2013, Jeffrey Pfau
 All rights reserved.
 
