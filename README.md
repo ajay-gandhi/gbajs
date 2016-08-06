@@ -8,7 +8,6 @@ browsers.
 
 * Setup canvas size on landscape
 * Setup buttons on landscape
-* Canvas size small on mobile, okay on desktop
 * Create save game functionality
   * Add to menu after choosing game
   * Put in URL for saving

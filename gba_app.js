@@ -25,19 +25,17 @@ try {
 $(document).ready(function() {
   // Make canvas as big as possible
   var ratio = 1.5;
-  // if ($(window).width() > $(window).height()) {
-  //   $('canvas').width($(window).width() * 2 / 3);
-  //   $('canvas').height($(window).width() * 2 / 3 / ratio);
-  // } else {
-    $('canvas').width($(window).width());
-    $('canvas').height($(window).width() / ratio);
-    var w = $('canvas').width() / ratio;
-    var h = $('canvas').height() / ratio;
-  // }
+  if ($(window).width() > $(window).height()) {
+    $('canvas').attr('width', $(window).width() * 2 / 3);
+    $('canvas').attr('height', $(window).width() * 2 / 3 / ratio);
+  } else {
+    $('canvas').attr('width', $(window).width());
+    $('canvas').attr('height', $(window).width() / ratio);
+  }
 
   if (gba && FileReader) {
     var canvas = document.getElementById('screen');
-    gba.setCanvas(canvas, w, h);
+    gba.setCanvas(canvas);
 
     gba.logLevel = gba.LOG_ERROR;
     // report fps
@@ -71,7 +69,7 @@ $(document).ready(function() {
       runCommands = [];
       fadeOut('preload', 'ingame');
       fadeOut('instructions', null, true);
-      // gba.runStable();
+      gba.runStable();
     });
 
   } else {

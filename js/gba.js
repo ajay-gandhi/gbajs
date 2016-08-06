@@ -67,7 +67,7 @@ function GameBoyAdvance() {
 	};
 };
 
-GameBoyAdvance.prototype.setCanvas = function(canvas, w, h) {
+GameBoyAdvance.prototype.setCanvas = function(canvas) {
 	var self = this;
 	if (canvas.offsetWidth != 240 || canvas.offsetHeight != 160) {
 		this.indirectCanvas = document.createElement("canvas");
@@ -77,7 +77,7 @@ GameBoyAdvance.prototype.setCanvas = function(canvas, w, h) {
 		this.setCanvasDirect(this.indirectCanvas);
 		var targetContext = canvas.getContext('2d');
 		this.video.drawCallback = function() {
-			targetContext.drawImage(self.indirectCanvas, 0, 0, w, h);
+			targetContext.drawImage(self.indirectCanvas, 0, 0, canvas.offsetWidth, canvas.offsetHeight);
 		}
 	} else {
 		this.setCanvasDirect(canvas);
