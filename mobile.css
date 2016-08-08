@@ -90,112 +90,231 @@ ul#selections li.hidden {
 /**
  * Game
  */
-canvas {
-  border: 1px solid red;
-}
 button {
   padding: 10px;
 }
 
 /**
+ * Portait mode
+ */
+/**
  * Controls
  */
-#controls {
+.portrait #controls {
   position: relative;
 }
-#controls button {
+.portrait #controls button {
   background-color: #fff;
   border: 1px solid #ccc;
 }
-#controls button:active {
+.portrait #controls button:active {
   border: 1px solid #888;
 }
 
-.ab {
+.portrait .ab {
   position: absolute;
   top: 50px;
   right: 15px;
   width: 130px;
   height: 130px;
 }
-.ab button {
+.portrait .ab button {
   width: 60px;
   height: 60px;
   border-radius: 30px;
 }
-.ab #a {
+.portrait .ab #a {
   position: absolute;
   top: 20px;
   right: 0px;
 }
-.ab #b {
+.portrait .ab #b {
   position: absolute;
   bottom: 20px;
   left: 0px;
 }
 
-.dpad {
+.portrait .dpad {
   position: absolute;
   top: 50px;
   left: 15px;
   width: 170px;
   height: 170px;
 }
-.dpad button {
+.portrait .dpad button {
   width: 60px;
   height: 60px;
   border-radius: 20px;
 }
-.dpad #up {
+.portrait .dpad #up {
   position: absolute;
   top: 0px;
   left: 55px;
 }
-.dpad #down {
+.portrait .dpad #down {
   position: absolute;
   bottom: 0px;
   left: 55px;
 }
-.dpad #left {
+.portrait .dpad #left {
   position: absolute;
   bottom: 55px;
   left: 0px;
 }
-.dpad #right {
+.portrait .dpad #right {
   position: absolute;
   bottom: 55px;
   right: 0px;
 }
 
-.lr {
+.portrait .lr {
   position: absolute;
   width: 100%;
   top: 0px;
 }
-.lr button {
+.portrait .lr button {
   width: 80px;
   height: 45px;
   border-radius: 10px;
 }
-.lr #l {
+.portrait .lr #l {
   position: absolute;
   top: 0px;
   left: 0px;
 }
-.lr #r {
+.portrait .lr #r {
   position: absolute;
   top: 0px;
   right: 0px;
 }
 
-.ss {
+.portrait .ss {
   position: absolute;
   top: 255px;
   width: 100%;
   text-align: center;
 }
-.ss button {
+.portrait .ss button {
   border-radius: 5px;
   width: 80px;
   height: 35px;
+}
+
+/**
+ * Landscape mode
+ */
+.landscape {
+  text-align: center;
+  margin-left: 40px;
+}
+.landscape canvas {
+  margin: 0 auto;
+  display: inline;
+}
+
+/**
+ * Controls
+ */
+.landscape #controls {
+  position: absolute;
+  width: 100%;
+  left: 0px;
+}
+.landscape #controls button {
+  background-color: #fff;
+  border: 1px solid #ccc;
+}
+.landscape #controls button:active {
+  border: 1px solid #888;
+}
+
+.landscape .ab {
+  position: absolute;
+  top: 50px;
+  right: 15px;
+  width: 130px;
+  height: 130px;
+}
+.landscape .ab button {
+  width: 60px;
+  height: 60px;
+  border-radius: 30px;
+}
+.landscape .ab #a {
+  position: absolute;
+  top: 20px;
+  right: 0px;
+}
+.landscape .ab #b {
+  position: absolute;
+  bottom: 20px;
+  left: 0px;
+}
+
+.landscape .dpad {
+  position: absolute;
+  top: 50px;
+  left: 15px;
+  width: 170px;
+  height: 170px;
+}
+.landscape .dpad button {
+  width: 60px;
+  height: 60px;
+  border-radius: 20px;
+}
+.landscape .dpad #up {
+  position: absolute;
+  top: 0px;
+  left: 55px;
+}
+.landscape .dpad #down {
+  position: absolute;
+  bottom: 0px;
+  left: 55px;
+}
+.landscape .dpad #left {
+  position: absolute;
+  bottom: 55px;
+  left: 0px;
+}
+.landscape .dpad #right {
+  position: absolute;
+  bottom: 55px;
+  right: 0px;
+}
+
+.landscape .lr {
+  position: absolute;
+  width: 100%;
+  top: 0px;
+}
+.landscape .lr button {
+  width: 80px;
+  height: 45px;
+  border-radius: 10px;
+}
+.landscape .lr #l {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+}
+.landscape .lr #r {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+}
+
+.landscape .ss {
+  position: absolute;
+  top: 255px;
+  left: 0px;
+  width: 200px;
+  height: 100px;
+}
+.landscape .ss button {
+  border-radius: 5px;
+  width: 80px;
+  height: 35px;
+  margin-bottom: 10px;
 }

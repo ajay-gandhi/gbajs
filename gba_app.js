@@ -22,16 +22,24 @@ try {
   gba = null;
 }
 
-$(document).ready(function() {
+var update_canvas_size = function () {
   // Make canvas as big as possible
-  var ratio = 1.5;
+  var ratio = 1.5; // = width / height
   if ($(window).width() > $(window).height()) {
-    $('canvas').attr('width', $(window).width() * 2 / 3);
-    $('canvas').attr('height', $(window).width() * 2 / 3 / ratio);
+    $('#orientation').removeClass('portrait').addClass('landscape');
+    $('canvas').attr('width', $(window).width() - 350);
+    $('canvas').attr('height', ($(window).width() - 350) / ratio);
+    $('.landscape #controls').css('top', ($(window).height() - 350) / 2 + 'px');
   } else {
+    $('#orientation').removeClass('landscape').addClass('portrait');
     $('canvas').attr('width', $(window).width());
     $('canvas').attr('height', $(window).width() / ratio);
   }
+}
+
+$(document).ready(function() {
+  window.addEventListener("orientationchange", update_canvas_size, false);
+  update_canvas_size();
 
   if (gba && FileReader) {
     var canvas = document.getElementById('screen');

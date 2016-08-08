@@ -6,8 +6,6 @@ browsers.
 
 ## TODO
 
-* Setup canvas size on landscape
-* Setup buttons on landscape
 * Create save game functionality
   * Add to menu after choosing game
   * Put in URL for saving
