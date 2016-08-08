@@ -8,6 +8,8 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
   <script>
   $(document).ready(function () {
+    var inflight = false;
+
     // List ROMs
     $.ajax({
       method: 'POST',
@@ -26,28 +28,84 @@
 
       // Rom selected
       $('#selections li').click(function () {
+        if (inflight) return;
         var romName = $(this).text();
 
-        $('body').append('<div id="cover"></div>');
-        $('#cover')
-          .fadeIn('fast', function () {
-            // Bring up canvas
-            window.location = 'gba.html?rom=' + romName;
-          });
-      });
+        // Get saves
+        $.ajax({
+          method: 'POST',
+          url: 'server.php',
+          data: {
+            request: 'listSaves',
+            gameName: romName
+          }
+        })
+        .done(function(msg) {
+          var saves = JSON.parse(msg);
 
-      // $('#selections li').last().click();
+          if (saves.length == 0) {
+            goto_gba(romName);
+          } else {
+            // Display saves
+            $.when(
+              $('#selections li').slideUp()
+            )
+            .done(function() {
+              inflight = false;
+              selections = $('#selections').html('');
+
+              $('#select-game').prepend('<div class="note">choose a save</div>');
+
+              // Add new game option
+              $('<li style="display:none;" class="bold" data-savename="{{new_game}}">New Game</li>')
+                .appendTo(selections);
+
+              saves.forEach(function (save) { 
+                var new_li = '<li style="display:none;" data-savename="' + save +
+                  '">' + save + '</li>';
+
+                $(new_li).appendTo(selections);
+              });
+
+              $('#selections li, #select-game .note').slideDown();
+              $('#select-game').animate({
+                bottom: '+=45'
+              });
+
+              $('#selections li').click(function () {
+                if (inflight) return;
+
+                // New game
+                if ($(this).attr('data-savename') === '{{new_game}}') {
+                  return goto_gba(romName);
+                }
+                goto_gba(romName, $(this).attr('data-savename'));                
+              });
+            });
+          }
+        });
+      });
     });
 
     // Rom search filter
     $('#search').on('change keyup paste', function () {
       var searchterm = $(this).val().toLowerCase();
-      $('ul').children().each(function () {
+      $('ul').children(':not(.bold)').each(function () {
         var hide = $(this).text().toLowerCase().indexOf(searchterm) < 0;
         $(this).toggleClass('hidden', hide);
       });
     });
   });
+
+  var goto_gba = function (rom, save) {
+    var url = 'gba.html?rom=' + rom;
+    if (save) url += '&save=' + save;
+
+    $('body').append('<div id="cover"></div>');
+    $('#cover').fadeIn('fast', function () {
+      window.location = url;
+    });
+  }
   </script>
 </head>
 <body>

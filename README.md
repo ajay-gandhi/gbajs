@@ -10,6 +10,7 @@ browsers.
   * Add to menu after choosing game
   * Put in URL for saving
 * Add button to go back to game browser in gba.html
+* Add keybindings for desktop
 
 > See fork source for information on emulator
 

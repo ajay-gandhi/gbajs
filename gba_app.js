@@ -68,51 +68,43 @@ $(document).ready(function() {
       pixelatedBox.parentElement.removeChild(pixelatedBox);
     }
 
-    var rom = location.search.substr(location.search.indexOf('=') + 1);
-    loadRom('roms/' + rom + '.gba', function (e) {
-      gba.setRom(e);
-      for (var i = 0; i < runCommands.length; ++i) {
-        runCommands[i]();
-      }
-      runCommands = [];
-      fadeOut('preload', 'ingame');
-      fadeOut('instructions', null, true);
-      gba.runStable();
-    });
+    // Parse querystring
+    var qs = window.location.search.substring(1).split('&');
+    var rom = qs.shift().split('=').pop();
 
+    if (qs.length) {
+      // Load savegame, then rom
+      var save = qs.length ? qs.shift().split('=').pop() : false;
+      loadRom('saves/' + save + '|' + rom, function (e) {
+        runCommands.push(function () {
+          gba.setSavedata(e);
+        });
+
+        // Load rom
+        loadRom('roms/' + rom + '.gba', function (e) {
+          gba.setRom(e);
+          for (var i = 0; i < runCommands.length; ++i) {
+            runCommands[i]();
+          }
+          runCommands = [];
+          gba.runStable();
+        });
+      });
+    } else {
+      // Just load rom
+      loadRom('roms/' + rom + '.gba', function (e) {
+        gba.setRom(e);
+        for (var i = 0; i < runCommands.length; ++i) {
+          runCommands[i]();
+        }
+        runCommands = [];
+        gba.runStable();
+      });
+    }
   } else {
     // Didn't work
   }
 });
-
-function fadeOut(id, nextId, kill) {
-  var e = document.getElementById(id);
-  var e2 = document.getElementById(nextId);
-  if (!e) {
-    return;
-  }
-  var removeSelf = function() {
-    if (kill) {
-      e.parentElement.removeChild(e);
-    } else {
-      e.setAttribute('class', 'dead');
-      e.removeEventListener('webkitTransitionEnd', removeSelf);
-      e.removeEventListener('oTransitionEnd', removeSelf);
-      e.removeEventListener('transitionend', removeSelf);
-    }
-    if (e2) {
-      e2.setAttribute('class', 'hidden');
-      setTimeout(function() {
-        e2.removeAttribute('class');
-      }, 0);
-    }
-  }
-
-  e.addEventListener('webkitTransitionEnd', removeSelf, false);
-  e.addEventListener('oTransitionEnd', removeSelf, false);
-  e.addEventListener('transitionend', removeSelf, false);
-  e.setAttribute('class', 'hidden');
-}
 
 function run(file) {
   var dead = document.getElementById('loader');
@@ -128,8 +120,6 @@ function run(file) {
         runCommands[i]();
       }
       runCommands = [];
-      fadeOut('preload', 'ingame');
-      fadeOut('instructions', null, true);
       gba.runStable();
     } else {
       load.textContent = 'FAILED';
@@ -162,7 +152,6 @@ function reset() {
   load.onclick = function() {
     document.getElementById('loader').click();
   }
-  fadeOut('ingame', 'preload');
 }
 
 function uploadSavedataPending(file) {
