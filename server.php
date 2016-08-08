@@ -14,8 +14,6 @@ if ($_POST['request'] == 'listRoms') {
   }
   echo json_encode($relevant_saves);
 
-} else if ($_POST['request'] == 'getRom') {
-  echo base64_encode(file_get_contents(__DIR__ . '/roms/' . basename($_POST['romName'])));
 }
 
 /**
