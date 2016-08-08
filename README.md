@@ -6,9 +6,10 @@ browsers.
 
 ## TODO
 
-* Create save game functionality
-  * Add to menu after choosing game
-  * Put in URL for saving
+* Add menu in gba.html
+  * Pause game when in menu
+  * Save game button
+  * Back to game browser button
 * Add button to go back to game browser in gba.html
 * Add keybindings for desktop
 

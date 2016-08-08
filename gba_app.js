@@ -27,8 +27,16 @@ var update_canvas_size = function () {
   var ratio = 1.5; // = width / height
   if ($(window).width() > $(window).height()) {
     $('#orientation').removeClass('portrait').addClass('landscape');
-    $('canvas').attr('width', $(window).width() - 350);
-    $('canvas').attr('height', ($(window).width() - 350) / ratio);
+    var w = $(window).width() - 350;
+    var h = ($(window).width() - 350) / ratio;
+    if (h > $(window).height()) {
+      h = $(window).height();
+      w = h * ratio;
+    }
+    var marginTop = ($(window).height() - h) / 2;
+    $('canvas').attr('width', w);
+    $('canvas').attr('height', h);
+    $('canvas').css('marginTop', marginTop);
     $('.landscape #controls').css('top', ($(window).height() - 350) / 2 + 'px');
   } else {
     $('#orientation').removeClass('landscape').addClass('portrait');
