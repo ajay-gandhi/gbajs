@@ -6,11 +6,8 @@ browsers.
 
 ## TODO
 
-* Add menu in gba.html
-  * Pause game when in menu
-  * Save game button
-  * Back to game browser button
-* Add button to go back to game browser in gba.html
+* Add localStorage savegame functionality
+* Add server-side savegame functionality
 * Add keybindings for desktop
 
 > See fork source for information on emulator
