@@ -318,7 +318,7 @@ GameBoyAdvance.prototype.getSavedata = function() {
     this.WARN("No save data available");
     return null;
   }
-  return this.encodeSavedata(sram.view);
+  return window.URL.createObjectURL(new Blob([this.mmu.save.buffer], { type: 'application/octet-stream' }));
 };
 
 GameBoyAdvance.prototype.saveLocal = function (rom, savename) {

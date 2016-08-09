@@ -62,7 +62,7 @@ $(document).ready(function() {
     //   counter.textContent = Math.floor(fps);
     // };
 
-    loadRom('resources/bios.bin', function(bios) {
+    loadRom('gbajs/assets/bios.bin', function(bios) {
       gba.setBios(bios);
     });
 
@@ -99,7 +99,7 @@ $(document).ready(function() {
         // Get from server
         loadRom('saves/' + save + '|' + CURRENT_ROM, function (e) {
           runCommands.push(function () {
-            gba.setSavedata(e);
+            gba.decodeSavedata(e);
           });
 
           // Load rom
@@ -148,7 +148,6 @@ $(document).ready(function() {
 
   $('#save-interface #create-save').click(function () {
     $(this).prop('disabled', 'true');
-    var savedata = gba.getSavedata();
 
     // Validate name
     var save_name = $('#save-interface #save-name').val();
@@ -178,10 +177,12 @@ $(document).ready(function() {
         data: {
           request: 'createSave',
           savename: save_name,
-          savedata: savedata
+          savedata: gba.getSavedata(),
+          rom: decodeURIComponent(CURRENT_ROM)
         }
       })
       .done(function(msg) {
+        console.log(msg);
         var succeeded = msg.trim() === 'true';
         var msg = succeeded ? 'Game saved!' : 'Game failed to save.';
         display_save_status(msg, succeeded);
@@ -361,4 +362,16 @@ var display_save_status = function (msg, successful) {
     $('#save-interface #create-save').removeAttr('disabled');
     $('#save-interface #save-status').fadeOut();
   }, 2000);
+}
+
+/**
+ * Conducts AJAX request to get the file
+ */
+function loadRom(url, callback) {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', url);
+  xhr.responseType = 'arraybuffer';
+
+  xhr.onload = function() { callback(xhr.response) };
+  xhr.send();
 }
