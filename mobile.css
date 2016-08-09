@@ -28,14 +28,23 @@ footer {
   bottom: 20px;
 }
 
-#cover {
+.cover {
   display: none;
   position: fixed;
   top: 0px;
   right: 0px;
   bottom: 0px;
   left: 0px;
+}
+#cover-light {
   background-color: #fff;
+  z-index: 999;
+}
+#cover-dark {
+  display: block;
+  background-color: #000;
+  opacity: 0;
+  z-index: 100;
 }
 
 /**
@@ -327,4 +336,54 @@ button {
   width: 80px;
   height: 35px;
   margin-bottom: 10px;
+}
+
+/**
+ * Menu
+ */
+#menu-open {
+  position: fixed;
+  bottom: -1px;
+  right: 10px;
+  padding: 2px 10px;
+  border: 1px solid #ccc;
+  border-top-right-radius: 5px;
+  border-top-left-radius: 5px;
+  font-size: 24px;
+  color: #333;
+  cursor: pointer;
+}
+#menu {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  height: 300px;
+  display: none;
+  background-color: #eee;
+  border: 2px solid #333;
+  border-radius: 10px;
+  z-index: 101;
+}
+#menu #close {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  padding: 1px 2px 8px 3px;
+  line-height: .5em;
+  color: #999;
+  font-size: 38px;
+  font-weight: bold;
+  cursor: pointer;
+}
+#menu #close:hover {
+  color: #666;
+}
+#menu h2 {
+  font-variant: small-caps;
+  font-weight: 200;
+  font-size: 36px;
+  text-align: center;
+  color: #333;
 }

@@ -80,6 +80,7 @@ $(document).ready(function() {
     var qs = window.location.search.substring(1).split('&');
     var rom = qs.shift().split('=').pop();
 
+      console.log('ok..');
     if (qs.length) {
       // Load savegame, then rom
       var save = qs.length ? qs.shift().split('=').pop() : false;
@@ -89,29 +90,33 @@ $(document).ready(function() {
         });
 
         // Load rom
-        loadRom('roms/' + rom + '.gba', function (e) {
-          gba.setRom(e);
-          for (var i = 0; i < runCommands.length; ++i) {
-            runCommands[i]();
-          }
-          runCommands = [];
-          gba.runStable();
-        });
+        start_game(rom);
       });
     } else {
       // Just load rom
-      loadRom('roms/' + rom + '.gba', function (e) {
-        gba.setRom(e);
-        for (var i = 0; i < runCommands.length; ++i) {
-          runCommands[i]();
-        }
-        runCommands = [];
-        gba.runStable();
-      });
+      start_game(rom);
     }
   } else {
-    // Didn't work
+    console.error('GBA failed.');
   }
+
+  $('#menu-open').click(function () {
+    $('<div class="cover" id="cover-dark"></div>')
+      .appendTo('body')
+      .fadeTo(400, 0.90);
+    $('#menu').fadeIn(400);
+  });
+  $('#menu #close').click(function () {
+    $('#cover-dark').fadeTo(400, 0, 'swing', function () { $(this).remove(); });
+    $('#menu').fadeOut(300);
+  });
+  $('#menu #back-to-browse').click(function () {
+    $('<div class="cover" id="cover-light"></div>')
+      .appendTo('body')
+      .fadeIn('fast', function () {
+        window.location = 'mobile.html';
+      });
+  });
 });
 
 function run(file) {
@@ -237,15 +242,16 @@ function setPixelated(pixelated) {
   }
 }
 
-document.addEventListener('webkitfullscreenchange', function() {
-  var canvas = document.getElementById('screen');
-  if (document.webkitIsFullScreen) {
-    canvas.setAttribute('height', document.body.offsetHeight);
-    canvas.setAttribute('width', document.body.offsetHeight / 2 * 3);
-    canvas.setAttribute('style', 'margin: 0');
-  } else {
-    canvas.setAttribute('height', 320);
-    canvas.setAttribute('width', 480);
-    canvas.removeAttribute('style');
-  }
-}, false);
+/**
+ * Starts the game with the given rom
+ */
+var start_game = function (game_name) {
+  loadRom('roms/' + game_name + '.gba', function (e) {
+    gba.setRom(e);
+    for (var i = 0; i < runCommands.length; ++i) {
+      runCommands[i]();
+    }
+    runCommands = [];
+    // gba.runStable();
+  });  
+}

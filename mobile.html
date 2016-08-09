@@ -101,10 +101,11 @@
     var url = 'gba.html?rom=' + rom;
     if (save) url += '&save=' + save;
 
-    $('body').append('<div id="cover"></div>');
-    $('#cover').fadeIn('fast', function () {
-      window.location = url;
-    });
+    $('<div class="cover" id="cover-light"></div>')
+      .appendTo('body')
+      .fadeIn('fast', function () {
+        window.location = url;
+      });
   }
   </script>
 </head>
