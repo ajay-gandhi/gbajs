@@ -81,7 +81,7 @@ GameBoyAdvanceKeypad.prototype.keyboardHandler = function(e) {
 		this.currentDown |= toggle;
 	}
 
-	if (this.eatInput) {
+	if (this.eatInput && e.preventDefault) {
 		e.preventDefault();
 	}
 };
@@ -147,4 +147,5 @@ GameBoyAdvanceKeypad.prototype.registerHandlers = function() {
 			type: 'keyup'
 		});
 	});
-};
+	window.addEventListener("keydown", this.keyboardHandler.bind(this), true);
+	window.addEventListener("keyup", this.keyboardHandler.bind(this), true);};

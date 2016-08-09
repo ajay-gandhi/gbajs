@@ -15,7 +15,13 @@ if ($_POST['request'] == 'listRoms') {
   echo json_encode($relevant_saves);
 
 } else if ($_POST['request'] == 'createSave') {
-  echo 'true';
+  try {
+    $filepath = 'saves/' . $_POST['savename'] . '|' . $_POST['rom'];
+    file_put_contents($filepath, $_POST['savedata']);
+    echo 'true';
+  } catch (Exception $e) {
+    echo 'false';
+  }
 }
 
 /**
