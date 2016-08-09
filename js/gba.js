@@ -307,17 +307,25 @@ GameBoyAdvance.prototype.downloadSavedata = function() {
 		var url = window.URL.createObjectURL(new Blob([sram.buffer], { type: 'application/octet-stream' }));
 		window.open(url);
 	} else {
-		var data = this.encodeBase64(sram.view);
+		var data = this.encodeSavedata(sram.view);
 		window.open('data:application/octet-stream;base64,' + data, this.rom.code + '.sav');
 	}
 };
 
+GameBoyAdvance.prototype.getSavedata = function() {
+	var sram = this.mmu.save;
+	if (!sram) {
+		this.WARN("No save data available");
+		return null;
+	}
+	return this.encodeSavedata(sram.view);
+};
 
 GameBoyAdvance.prototype.storeSavedata = function() {
 	var sram = this.mmu.save;
 	try {
 		var storage = window.localStorage;
-		storage[this.SYS_ID + '.' + this.mmu.cart.code] = this.encodeBase64(sram.view);
+		storage[this.SYS_ID + '.' + this.mmu.cart.code] = this.encodeSavedata(sram.view);
 	} catch (e) {
 		this.WARN('Could not store savedata! ' + e);
 	}

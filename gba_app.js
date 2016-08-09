@@ -80,10 +80,11 @@ $(document).ready(function() {
     var qs = window.location.search.substring(1).split('&');
     var rom = qs.shift().split('=').pop();
 
-      console.log('ok..');
     if (qs.length) {
+
       // Load savegame, then rom
       var save = qs.length ? qs.shift().split('=').pop() : false;
+      $('#menu #save-name').val(save);
       loadRom('saves/' + save + '|' + rom, function (e) {
         runCommands.push(function () {
           gba.setSavedata(e);
@@ -100,16 +101,57 @@ $(document).ready(function() {
     console.error('GBA failed.');
   }
 
+  // Menu events
   $('#menu-open').click(function () {
+    gba.pause();
     $('<div class="cover" id="cover-dark"></div>')
       .appendTo('body')
       .fadeTo(400, 0.90);
     $('#menu').fadeIn(400);
   });
   $('#menu #close').click(function () {
-    $('#cover-dark').fadeTo(400, 0, 'swing', function () { $(this).remove(); });
+    $('#cover-dark').fadeTo(400, 0, 'swing', function () {
+      $(this).remove();
+    });
     $('#menu').fadeOut(300);
+    setTimeout(function () {
+      gba.runStable();
+    }, 500);
   });
+
+  $('#save-interface #create-save').click(function () {
+    var btn = $(this);
+    btn.prop('disabled', true);
+    var savedata = gba.getSavedata();
+    $.ajax({
+      method: 'POST',
+      url: 'server.php',
+      data: {
+        request: 'createSave',
+        savedata: savedata
+      }
+    })
+    .done(function(msg) {
+      if (msg.trim() === 'true') {
+        $('#save-interface #save-status')
+          .removeClass('failure')
+          .addClass('success')
+          .text('Game saved!');
+      } else {
+        $('#save-interface #save-status')
+          .removeClass('success')
+          .addClass('failure')
+          .text('Game failed to save.');
+      }
+
+      $('#save-interface #save-status').fadeIn();
+      setTimeout(function () {
+        btn.removeProp('disabled');
+        $('#save-interface #save-status').fadeOut();
+      }, 2000);
+    });
+  });
+
   $('#menu #back-to-browse').click(function () {
     $('<div class="cover" id="cover-light"></div>')
       .appendTo('body')
@@ -167,20 +209,13 @@ function reset() {
   }
 }
 
-function uploadSavedataPending(file) {
-  runCommands.push(function() { gba.loadSavedataFromFile(file) });
-}
-
-function togglePause() {
-  var e = document.getElementById('pause');
-  if (gba.paused) {
-    gba.runStable();
-    e.textContent = "PAUSE";
-  } else {
-    gba.pause();
-    e.textContent = "UNPAUSE";
-  }
-}
+// function togglePause() {
+//   if (gba.paused) {
+//     gba.runStable();
+//   } else {
+//     gba.pause();
+//   }
+// }
 
 function screenshot() {
   var canvas = gba.indirectCanvas;

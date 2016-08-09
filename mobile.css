@@ -311,17 +311,20 @@ button {
 .landscape .lr button {
   width: 80px;
   height: 45px;
-  border-radius: 10px;
 }
 .landscape .lr #l {
   position: absolute;
   top: 0px;
   left: 0px;
+  border-top-right-radius: 10px;  
+  border-bottom-right-radius: 10px;  
 }
 .landscape .lr #r {
   position: absolute;
   top: 0px;
   right: 0px;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
 }
 
 .landscape .ss {
@@ -359,12 +362,14 @@ button {
   left: 50%;
   transform: translate(-50%, -50%);
   width: 300px;
-  height: 300px;
+  height: 250px;
+  padding: 10px;
   display: none;
-  background-color: #eee;
+  background-color: #f2f2f2;
   border: 2px solid #333;
   border-radius: 10px;
   z-index: 101;
+  text-align: center;
 }
 #menu #close {
   position: absolute;
@@ -384,6 +389,55 @@ button {
   font-variant: small-caps;
   font-weight: 200;
   font-size: 36px;
-  text-align: center;
+  margin-bottom: 30px;
   color: #333;
+}
+
+#save-interface {
+  position: relative;
+  width: 275px;
+}
+#save-interface input {
+  font-size: 16px;
+  padding: 10px;
+  width: 215px;
+  border: 1px solid #ccc;
+}
+#save-interface #create-save {
+  padding: 10px;
+  margin-left: -4px;
+  font-size: 16px;
+  width: 60px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-left: none;
+  color: #666;
+}
+#save-interface #save-status {
+  display: none;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  padding-top: 8px;
+  font-size: 16px;
+  color: #fff;
+}
+#save-interface #save-status.success {
+  background-color: #5cb85c;
+  border: 2px solid #207c20;
+}
+#save-interface #save-status.failure {
+  background-color: #d9534f;
+  border: 2px solid #9d1713;
+}
+
+#menu #back-to-browse {
+  padding: 10px;
+  font-size: 16px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  color: #666;
 }
