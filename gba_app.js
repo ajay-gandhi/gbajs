@@ -45,6 +45,8 @@ var update_canvas_size = function () {
   }
 }
 
+var CURRENT_ROM;
+
 $(document).ready(function() {
   window.addEventListener("orientationchange", update_canvas_size, false);
   update_canvas_size();
@@ -78,24 +80,35 @@ $(document).ready(function() {
 
     // Parse querystring
     var qs = window.location.search.substring(1).split('&');
-    var rom = qs.shift().split('=').pop();
+    CURRENT_ROM = qs.shift().split('=').pop();
 
     if (qs.length) {
 
       // Load savegame, then rom
-      var save = qs.length ? qs.shift().split('=').pop() : false;
+      var save = qs.shift().split('=').pop();
       $('#menu #save-name').val(save);
-      loadRom('saves/' + save + '|' + rom, function (e) {
+      var is_local = qs.shift().split('=').pop() === 'true';
+      if (is_local) {
+        // Load from localStorage
         runCommands.push(function () {
-          gba.setSavedata(e);
+          gba.loadLocal(CURRENT_ROM, save);
         });
+        start_game(CURRENT_ROM);
 
-        // Load rom
-        start_game(rom);
-      });
+      } else {
+        // Get from server
+        loadRom('saves/' + save + '|' + CURRENT_ROM, function (e) {
+          runCommands.push(function () {
+            gba.setSavedata(e);
+          });
+
+          // Load rom
+          start_game(CURRENT_ROM);
+        });
+      }
     } else {
       // Just load rom
-      start_game(rom);
+      start_game(CURRENT_ROM);
     }
   } else {
     console.error('GBA failed.');
@@ -119,37 +132,61 @@ $(document).ready(function() {
     }, 500);
   });
 
+  var save_type_fadeout = null;
+  $('#save-interface #offline-save').change(function () {
+    var is_offline = $(this).is(':checked');
+    window.clearTimeout(save_type_fadeout);
+    $('#save-interface #save-type')
+      .stop()
+      .text(is_offline ? 'Save offline' : 'Save online')
+      .fadeIn('normal', function () {
+        save_type_fadeout = setTimeout(function () {
+          $('#save-interface #save-type').fadeOut();
+        }, 1200);
+      });
+  });
+
   $('#save-interface #create-save').click(function () {
-    var btn = $(this);
-    btn.prop('disabled', true);
+    $(this).prop('disabled', 'true');
     var savedata = gba.getSavedata();
-    $.ajax({
-      method: 'POST',
-      url: 'server.php',
-      data: {
-        request: 'createSave',
-        savedata: savedata
-      }
-    })
-    .done(function(msg) {
-      if (msg.trim() === 'true') {
-        $('#save-interface #save-status')
-          .removeClass('failure')
-          .addClass('success')
-          .text('Game saved!');
+
+    // Validate name
+    var save_name = $('#save-interface #save-name').val();
+    if (!/^[a-zA-Z0-9_-]*$/.test(save_name)) {
+      display_save_status('Only alphanumeric and -_ allowed.', false);
+      return;
+    }
+
+    var save_offline = $('#save-interface #offline-save').is(':checked');
+    if (save_offline) {
+      // Save in localStorage
+      if (localStorage_avail()) {
+        var succeeded = gba.saveLocal(CURRENT_ROM, save_name);
+        var msg = succeeded ? 'Game saved!' : 'Game failed to save.';
+        display_save_status(msg, succeeded);
+
       } else {
-        $('#save-interface #save-status')
-          .removeClass('success')
-          .addClass('failure')
-          .text('Game failed to save.');
+        // Display fail
+        display_save_status('Local save not supported.', false);
       }
 
-      $('#save-interface #save-status').fadeIn();
-      setTimeout(function () {
-        btn.removeProp('disabled');
-        $('#save-interface #save-status').fadeOut();
-      }, 2000);
-    });
+    } else {
+      // Save to server
+      $.ajax({
+        method: 'POST',
+        url: 'server.php',
+        data: {
+          request: 'createSave',
+          savename: save_name,
+          savedata: savedata
+        }
+      })
+      .done(function(msg) {
+        var succeeded = msg.trim() === 'true';
+        var msg = succeeded ? 'Game saved!' : 'Game failed to save.';
+        display_save_status(msg, succeeded);
+      });
+    }
   });
 
   $('#menu #back-to-browse').click(function () {
@@ -287,6 +324,41 @@ var start_game = function (game_name) {
       runCommands[i]();
     }
     runCommands = [];
-    // gba.runStable();
+    gba.runStable();
   });  
+}
+
+/**
+ * Returns true if localStorage is available, otherwise false
+ */
+var localStorage_avail = function () {
+  try {
+    var storage = window['localStorage'],
+        x       = '__storage_test__';
+    storage.setItem(x, x);
+    storage.removeItem(x);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+var display_save_status = function (msg, successful) {
+  if (successful) {
+    $('#save-interface #save-status')
+      .removeClass('failure')
+      .addClass('success')
+      .text(msg);
+  } else {
+    $('#save-interface #save-status')
+      .removeClass('success')
+      .addClass('failure')
+      .text(msg);
+  }
+
+  $('#save-interface #save-status').fadeIn();
+  setTimeout(function () {
+    $('#save-interface #create-save').removeAttr('disabled');
+    $('#save-interface #save-status').fadeOut();
+  }, 2000);
 }

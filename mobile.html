@@ -32,6 +32,7 @@
         var romName = $(this).text();
 
         // Get saves
+        var local_saves = list_local_saves(romName);
         $.ajax({
           method: 'POST',
           url: 'server.php',
@@ -43,46 +44,56 @@
         .done(function(msg) {
           var saves = JSON.parse(msg);
 
-          if (saves.length == 0) {
+          // No saves
+          if (saves.length == 0 && local_saves.length == 0) {
             goto_gba(romName);
-          } else {
-            // Display saves
-            $.when(
-              $('#selections li').slideUp()
-            )
-            .done(function() {
-              inflight = false;
-              selections = $('#selections').html('');
-
-              $('#select-game').prepend('<div class="note">choose a save</div>');
-
-              // Add new game option
-              $('<li style="display:none;" class="bold" data-savename="{{new_game}}">New Game</li>')
-                .appendTo(selections);
-
-              saves.forEach(function (save) { 
-                var new_li = '<li style="display:none;" data-savename="' + save +
-                  '">' + save + '</li>';
-
-                $(new_li).appendTo(selections);
-              });
-
-              $('#selections li, #select-game .note').slideDown();
-              $('#select-game').animate({
-                bottom: '+=45'
-              });
-
-              $('#selections li').click(function () {
-                if (inflight) return;
-
-                // New game
-                if ($(this).attr('data-savename') === '{{new_game}}') {
-                  return goto_gba(romName);
-                }
-                goto_gba(romName, $(this).attr('data-savename'));                
-              });
-            });
+            return;
           }
+
+          // Display saves
+          $.when(
+            $('#selections li').slideUp()
+          )
+          .done(function() {
+            inflight = false;
+            selections = $('#selections').html('');
+
+            $('#select-game').prepend('<div class="note">choose a save</div>');
+
+            // Add new game option
+            $('<li style="display:none;" class="bold" data-savename="{{new_game}}">New Game</li>')
+              .appendTo(selections);
+
+            local_saves.forEach(function (save) { 
+              var new_li = '<li style="display:none;" data-local="true" ' +
+                'data-savename="' + save + '"><span>Local </span>' + save + '</li>';
+
+              $(new_li).appendTo(selections);
+            });
+
+            saves.forEach(function (save) { 
+              var new_li = '<li style="display:none;" data-local="false" ' +
+                'data-savename="' + save + '">' + save + '</li>';
+
+              $(new_li).appendTo(selections);
+            });
+
+            $('#selections li, #select-game .note').slideDown();
+            $('#select-game').animate({
+              bottom: '+=45'
+            });
+
+            $('#selections li').click(function () {
+              if (inflight) return;
+
+              // New game
+              if ($(this).attr('data-savename') === '{{new_game}}') {
+                return goto_gba(romName);
+              }
+              var is_local = $(this).attr('data-local') === 'true';
+              goto_gba(romName, $(this).attr('data-savename'), is_local);                
+            });
+          });
         });
       });
     });
@@ -97,15 +108,37 @@
     });
   });
 
-  var goto_gba = function (rom, save) {
+  /**
+   * Fades to white, then redirects
+   */
+  var goto_gba = function (rom, save, local) {
     var url = 'gba.html?rom=' + rom;
-    if (save) url += '&save=' + save;
+    if (save) url += '&save=' + save + '&local=' + local;
 
     $('<div class="cover" id="cover-light"></div>')
       .appendTo('body')
       .fadeIn('fast', function () {
         window.location = url;
       });
+  }
+
+  /**
+   * Gets list of games from localStorage
+   */
+  var list_local_saves = function (rom) {
+    rom = encodeURIComponent(rom);
+    try {
+      var storage = window.localStorage;
+      var key = 'com.ajay-gandhi.gbajs.save';
+      if (!storage[key]) return [];
+
+      var parsed_storage = JSON.parse(storage[key]);
+      if (!parsed_storage[rom]) return [];
+
+      return Object.keys(parsed_storage[rom]);
+    } catch (e) {
+      return [];
+    }
   }
   </script>
 </head>

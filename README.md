@@ -6,9 +6,9 @@ browsers.
 
 ## TODO
 
-* Add localStorage savegame functionality
 * Add server-side savegame functionality
 * Add keybindings for desktop
+* Rename (and change SYS_ID in gba.js)
 
 > See fork source for information on emulator
 

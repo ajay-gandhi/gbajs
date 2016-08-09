@@ -102,6 +102,10 @@ ul#selections li:first-child {
 ul#selections li.bold {
   font-weight: bold;
 }
+ul#selections span {
+  color: #888;
+  font-size: 16px;
+}
 ul#selections li.hidden {
   display: none;
 }
@@ -397,7 +401,7 @@ button {
   position: relative;
   width: 275px;
 }
-#save-interface input {
+#save-interface #save-name {
   font-size: 16px;
   padding: 10px;
   width: 215px;
@@ -412,6 +416,24 @@ button {
   border: 1px solid #ccc;
   border-left: none;
   color: #666;
+}
+#save-interface #offline-save {
+  position: absolute;
+  top: 10px;
+  left: 190px;
+  font-size: 16px;
+}
+#save-interface #save-type {
+  display: none;
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  right: 61px;
+  bottom: 1px;
+  padding-top: 10px;
+  font-size: 16px;
+  color: #000;
+  background-color: #fff;
 }
 #save-interface #save-status {
   display: none;

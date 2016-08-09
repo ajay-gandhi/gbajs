@@ -14,6 +14,8 @@ if ($_POST['request'] == 'listRoms') {
   }
   echo json_encode($relevant_saves);
 
+} else if ($_POST['request'] == 'createSave') {
+  echo 'true';
 }
 
 /**
