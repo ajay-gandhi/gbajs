@@ -1,5 +1,7 @@
 function ARMCore() {
-	this.inherit();
+	for (var v in this) {
+		this[v] = this[v];
+	}
 	this.SP = 13;
 	this.LR = 14;
 	this.PC = 15;
