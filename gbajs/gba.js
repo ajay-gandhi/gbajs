@@ -101,7 +101,7 @@ GameBoyAdvance.prototype.setRom = function(rom) {
   if (!this.rom) {
     return false;
   }
-  this.retrieveSavedata();
+  // this.retrieveSavedata();
   return true;
 };
 
@@ -232,6 +232,7 @@ GameBoyAdvance.prototype.runStable = function() {
 };
 
 GameBoyAdvance.prototype.setSavedata = function(data) {
+  console.log('save data is', data);
   this.mmu.loadSavedata(data);
 };
 
@@ -240,10 +241,6 @@ GameBoyAdvance.prototype.loadSavedataFromFile = function(saveFile) {
   var self = this;
   reader.onload = function(e) { self.setSavedata(e.target.result); }
   reader.readAsArrayBuffer(saveFile);
-};
-
-GameBoyAdvance.prototype.decodeSavedata = function(string) {
-  this.setSavedata(this.decodeBase64(string));
 };
 
 GameBoyAdvance.prototype.decodeBase64 = function(string) {
@@ -318,7 +315,8 @@ GameBoyAdvance.prototype.getSavedata = function() {
     this.WARN("No save data available");
     return null;
   }
-  return window.URL.createObjectURL(new Blob([this.mmu.save.buffer], { type: 'application/octet-stream' }));
+  return this.encodeSavedata(sram.view);
+  // return btoa(new Blob([sram.buffer], { type: 'application/octet-stream' }));
 };
 
 GameBoyAdvance.prototype.saveLocal = function (rom, savename) {

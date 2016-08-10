@@ -22,29 +22,6 @@ try {
   gba = null;
 }
 
-var update_canvas_size = function () {
-  // Make canvas as big as possible
-  var ratio = 1.5; // = width / height
-  if ($(window).width() > $(window).height()) {
-    $('#orientation').removeClass('portrait').addClass('landscape');
-    var w = $(window).width() - 350;
-    var h = ($(window).width() - 350) / ratio;
-    if (h > $(window).height()) {
-      h = $(window).height();
-      w = h * ratio;
-    }
-    var marginTop = ($(window).height() - h) / 2;
-    $('canvas').attr('width', w);
-    $('canvas').attr('height', h);
-    $('canvas').css('marginTop', marginTop);
-    $('.landscape #controls').css('top', ($(window).height() - 350) / 2 + 'px');
-  } else {
-    $('#orientation').removeClass('landscape').addClass('portrait');
-    $('canvas').attr('width', $(window).width());
-    $('canvas').attr('height', $(window).width() / ratio);
-  }
-}
-
 var CURRENT_ROM;
 
 $(document).ready(function() {
@@ -99,12 +76,12 @@ $(document).ready(function() {
         // Get from server
         loadRom('saves/' + save + '|' + CURRENT_ROM, function (e) {
           runCommands.push(function () {
-            gba.decodeSavedata(e);
+            gba.decodeBase64(e);
           });
 
           // Load rom
           start_game(CURRENT_ROM);
-        });
+        }, true);
       }
     } else {
       // Just load rom
@@ -170,19 +147,30 @@ $(document).ready(function() {
       }
 
     } else {
+      var savedata = gba.getSavedata();
+      console.log(savedata);
+
+      // var data = new FormData();
+      // data.append('file', savedata);
+      // data.append('request', 'createSave');
+      // data.append('savename', save_name);
+      // data.append('rom', decodeURIComponent(CURRENT_ROM));
+
       // Save to server
       $.ajax({
         method: 'POST',
         url: 'server.php',
+        // contentType: false,
+        // processData: false,
         data: {
-          request: 'createSave',
-          savename: save_name,
-          savedata: gba.getSavedata(),
-          rom: decodeURIComponent(CURRENT_ROM)
+          'request': 'createSave',
+          'savename': save_name,
+          'savedata': savedata,
+          'rom': decodeURIComponent(CURRENT_ROM)
         }
       })
       .done(function(msg) {
-        console.log(msg);
+        console.log('result:', msg);
         var succeeded = msg.trim() === 'true';
         var msg = succeeded ? 'Game saved!' : 'Game failed to save.';
         display_save_status(msg, succeeded);
@@ -367,11 +355,37 @@ var display_save_status = function (msg, successful) {
 /**
  * Conducts AJAX request to get the file
  */
-function loadRom(url, callback) {
+function loadRom(url, callback, as_string) {
   var xhr = new XMLHttpRequest();
   xhr.open('GET', url);
-  xhr.responseType = 'arraybuffer';
+  if (typeof as_string === 'undefined') xhr.responseType = 'arraybuffer';
 
   xhr.onload = function() { callback(xhr.response) };
   xhr.send();
+}
+
+/**
+ * Sets canvas size and position based on window size
+ */
+var update_canvas_size = function () {
+  // Make canvas as big as possible
+  var ratio = 1.5; // = width / height
+  if ($(window).width() > $(window).height()) {
+    $('#orientation').removeClass('portrait').addClass('landscape');
+    var w = $(window).width() - 350;
+    var h = ($(window).width() - 350) / ratio;
+    if (h > $(window).height()) {
+      h = $(window).height();
+      w = h * ratio;
+    }
+    var marginTop = ($(window).height() - h) / 2;
+    $('canvas').attr('width', w);
+    $('canvas').attr('height', h);
+    $('canvas').css('marginTop', marginTop);
+    $('.landscape #controls').css('top', ($(window).height() - 350) / 2 + 'px');
+  } else {
+    $('#orientation').removeClass('landscape').addClass('portrait');
+    $('canvas').attr('width', $(window).width());
+    $('canvas').attr('height', $(window).width() / ratio);
+  }
 }
