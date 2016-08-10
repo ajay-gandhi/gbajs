@@ -1,0 +1,27 @@
+{
+  "name": "gbaplay",
+  "version": "0.0.1",
+  "description": "Play GameBoy games in your browser",
+  "engines": {
+    "node": "5.9.1"
+  },
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.13.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ajay-gandhi/gbajs.git"
+  },
+  "keywords": [
+    "game",
+    "boy",
+    "advance",
+    "emulator"
+  ],
+  "license": "MIT"
+}
