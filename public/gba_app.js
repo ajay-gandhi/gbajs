@@ -148,29 +148,18 @@ $(document).ready(function() {
 
     } else {
       var savedata = gba.getSavedata();
-      console.log(savedata);
-
-      // var data = new FormData();
-      // data.append('file', savedata);
-      // data.append('request', 'createSave');
-      // data.append('savename', save_name);
-      // data.append('rom', decodeURIComponent(CURRENT_ROM));
 
       // Save to server
       $.ajax({
         method: 'POST',
-        url: 'server.php',
-        // contentType: false,
-        // processData: false,
+        url: 'createSave',
         data: {
-          'request': 'createSave',
           'savename': save_name,
           'savedata': savedata,
           'rom': decodeURIComponent(CURRENT_ROM)
         }
       })
       .done(function(msg) {
-        console.log('result:', msg);
         var succeeded = msg.trim() === 'true';
         var msg = succeeded ? 'Game saved!' : 'Game failed to save.';
         display_save_status(msg, succeeded);

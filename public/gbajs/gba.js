@@ -232,7 +232,6 @@ GameBoyAdvance.prototype.runStable = function() {
 };
 
 GameBoyAdvance.prototype.setSavedata = function(data) {
-  console.log('save data is', data);
   this.mmu.loadSavedata(data);
 };
 
@@ -349,7 +348,7 @@ GameBoyAdvance.prototype.loadLocal = function(rom, save) {
 
     var data = parsed_storage[rom][save];
     if (data) {
-      this.decodeSavedata(data);
+      this.decodeBase64(data);
     }
   } catch (e) {
     this.WARN('Could not retrieve savedata! ' + e);
@@ -371,7 +370,7 @@ GameBoyAdvance.prototype.retrieveSavedata = function() {
     var storage = window.localStorage;
     var data = storage[this.SYS_ID + '.' + this.mmu.cart.code];
     if (data) {
-      this.decodeSavedata(data);
+      this.decodeBase64(data);
       return true;
     }
   } catch (e) {

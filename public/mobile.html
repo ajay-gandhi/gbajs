@@ -13,14 +13,9 @@
     // List ROMs
     $.ajax({
       method: 'POST',
-      url: 'server.php',
-      data: {
-        request: 'listRoms'
-      }
+      url: 'listRoms'
     })
-    .done(function(msg) {
-      var roms = JSON.parse(msg);
-
+    .done(function(roms) {
       var selections = $('#selections').html('');
       roms.forEach(function (rom) { 
         selections.append('<li>' + rom.substr(0, rom.length - 4) + '</li>');
@@ -35,15 +30,10 @@
         var local_saves = list_local_saves(romName);
         $.ajax({
           method: 'POST',
-          url: 'server.php',
-          data: {
-            request: 'listSaves',
-            gameName: romName
-          }
+          url: 'listSaves',
+          data: { gameName: romName }
         })
-        .done(function(msg) {
-          var saves = JSON.parse(msg);
-
+        .done(function(saves) {
           // No saves
           if (saves.length == 0 && local_saves.length == 0) {
             goto_gba(romName);

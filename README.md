@@ -6,9 +6,9 @@ browsers.
 
 ## TODO
 
-* Rename (and change SYS_ID in gba.js)
 * Enforce security with file writing
-* Convert to JS?
+* Rename (and change SYS_ID in gba.js)
 * Add support for accounts
 
 > See fork source for information on emulator
+
