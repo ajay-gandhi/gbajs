@@ -1,9 +1,16 @@
 'use strict';
 
+// NPM modules
 var express    = require('express'),
     bodyParser = require('body-parser'),
     fs         = require('fs');
 
+// Local modules
+var FB = require('./fb');
+
+var facebook = new FB();
+
+// Set up express
 var app = express();
 app.set('port', (process.env.PORT || 8000));
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -11,6 +18,20 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 app.use('/roms', express.static(__dirname + '/roms'));
 app.use('/saves', express.static(__dirname + '/saves'));
+
+/**
+ * Verify access token
+ */
+app.post('/login', function (req, res) {
+  facebook
+    .verify_token(req.body.token)
+    .then(function (verified) {
+      if (verified) {
+        console.log('Verified user:', req.body.user_id);
+      }
+      res.send(verified);
+    });
+});
 
 /**
  * List available ROMs
@@ -26,7 +47,6 @@ app.post('/listRoms', function (req, res) {
  * List available save files
  */
 app.post('/listSaves', function (req, res) {
-  console.log(req.body);
   fs.readdir(__dirname + '/roms', function (err, files) {
     if (err) return console.error(err);
 
