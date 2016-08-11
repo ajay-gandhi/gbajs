@@ -12,6 +12,9 @@ app.use(express.static(__dirname + '/public'));
 app.use('/roms', express.static(__dirname + '/roms'));
 app.use('/saves', express.static(__dirname + '/saves'));
 
+/**
+ * List available ROMs
+ */
 app.post('/listRoms', function (req, res) {
   fs.readdir(__dirname + '/roms', function (err, files) {
     if (err) return console.error(err);
@@ -19,6 +22,9 @@ app.post('/listRoms', function (req, res) {
   });
 });
 
+/**
+ * List available save files
+ */
 app.post('/listSaves', function (req, res) {
   console.log(req.body);
   fs.readdir(__dirname + '/roms', function (err, files) {
@@ -31,8 +37,10 @@ app.post('/listSaves', function (req, res) {
   });
 });
 
+/**
+ * Create new save file
+ */
 app.post('/createSave', function (req, res) {
-  console.log(req.body);
   var filepath = 'saves/' + req.body.savename + '|' + req.body.rom;
   fs.writeFile(filepath, req.body.savedata, function (err) {
     if (err) {
