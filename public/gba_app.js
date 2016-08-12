@@ -171,7 +171,7 @@ $(document).ready(function() {
     $('<div class="cover" id="cover-light"></div>')
       .appendTo('body')
       .fadeIn('fast', function () {
-        window.location = 'mobile.html';
+        window.location = 'browse.html';
       });
   });
 });
