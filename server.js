@@ -3,7 +3,8 @@
 // NPM modules
 var express    = require('express'),
     bodyParser = require('body-parser'),
-    fs         = require('fs');
+    fs         = require('fs'),
+    rp         = require('rp');
 
 // Local modules
 var UserDB = require('./userdb');
@@ -28,15 +29,24 @@ app.use(function (req, res, next) {
  * Add a ROM for a user
  */
 app.post('/addRom', function (req, res) {
-  var added = users.add_new_rom(req.body.user_id, req.body.rom_name, req.body.rom_url);
-  if (added == true) {
-    users.page();
-    res.send(true);
-  } else {
-    res.send(JSON.stringify({
-      message: added ? added : 'Failed to add ROM.'
-    }));
-  }
+  // At the very least confirm file exists
+  rp(req.body.rom_url)
+    .then(function () {
+      var added = users.add_new_rom(req.body.user_id, req.body.rom_name, req.body.rom_url);
+      if (added == true) {
+        users.page();
+        res.send(true);
+      } else {
+        res.send(JSON.stringify({
+          message: added ? added : 'Failed to add ROM.'
+        }));
+      }
+    })
+    .catch(function () {
+      res.send(JSON.stringify({
+        message: 'Invalid URL.'
+      }));
+    });
 });
 
 /**
