@@ -29,8 +29,7 @@ $(document).on('fully_ready', function () {
   update_canvas_size();
 
   if (gba && FileReader) {
-    var canvas = document.getElementById('screen');
-    gba.setCanvas(canvas);
+    gba.setCanvas(document.getElementById('screen'));
 
     gba.logLevel = gba.LOG_ERROR;
     // report fps
@@ -39,7 +38,7 @@ $(document).on('fully_ready', function () {
     //   counter.textContent = Math.floor(fps);
     // };
 
-    loadRom('gbajs/assets/bios.bin', function (bios) {
+    loadFile('gbajs/assets/bios.bin', function (bios) {
       gba.setBios(bios);
     });
 
@@ -57,7 +56,7 @@ $(document).on('fully_ready', function () {
 
     // Parse querystring
     var qs = window.location.search.substring(1).split('&');
-    CURRENT_ROM = qs.shift().split('=').pop();
+    CURRENT_ROM = decodeURIComponent(qs.shift().split('=').pop());
     $('title').text($('title').text() + ' | ' + CURRENT_ROM);
 
     if (qs.length) {
@@ -75,14 +74,27 @@ $(document).on('fully_ready', function () {
 
       } else {
         // Get from server
-        loadRom('saves/' + save + '|' + CURRENT_ROM, function (e) {
-          runCommands.push(function () {
-            gba.decodeBase64(e);
-          });
+        $.ajax({
+          url: 'getSaveData',
+          data: {
+            'save_name': save_name,
+            'rom_name': CURRENT_ROM
+          }
+        })
+        .done(function (savedata) {
+          if (!savedata) {
+            // Invalid save
+            start_game(CURRENT_ROM);
 
-          // Load rom
-          start_game(CURRENT_ROM);
-        }, true);
+          } else {
+            runCommands.push(function () {
+              gba.decodeBase64(e);
+            });
+
+            // Load rom
+            start_game(CURRENT_ROM);
+          }
+        });
       }
     } else {
       // Just load rom
@@ -156,7 +168,7 @@ $(document).on('fully_ready', function () {
         data: {
           'savename': save_name,
           'savedata': savedata,
-          'rom': decodeURIComponent(CURRENT_ROM)
+          'rom': CURRENT_ROM
         }
       })
       .done(function (msg) {
@@ -224,14 +236,6 @@ function reset() {
   }
 }
 
-// function togglePause() {
-//   if (gba.paused) {
-//     gba.runStable();
-//   } else {
-//     gba.pause();
-//   }
-// }
-
 function screenshot() {
   var canvas = gba.indirectCanvas;
   window.open(canvas.toDataURL('image/png'), 'screenshot');
@@ -296,14 +300,29 @@ function setPixelated(pixelated) {
  * Starts the game with the given rom
  */
 var start_game = function (game_name) {
-  loadRom('roms/' + game_name + '.gba', function (e) {
-    gba.setRom(e);
+  $.ajax({
+    url: 'getRom',
+    data: { 'rom_name': CURRENT_ROM }
+  })
+  .done(function (b64e_rom) {
+    rom = base64ToArrayBuffer(b64e_rom);
+    gba.setRom(rom);
     for (var i = 0; i < runCommands.length; ++i) {
       runCommands[i]();
     }
     runCommands = [];
     gba.runStable();
-  });  
+  });
+}
+
+function base64ToArrayBuffer(base64) {
+  var binary_string =  window.atob(base64);
+  var len = binary_string.length;
+  var bytes = new Uint8Array( new ArrayBuffer(len) );
+  for (var i = 0; i < len; i++)        {
+      bytes[i] = binary_string.charCodeAt(i);
+  }
+  return bytes.buffer;
 }
 
 /**
@@ -347,7 +366,7 @@ var display_save_status = function (msg, successful) {
 /**
  * Conducts AJAX request to get the file
  */
-function loadRom(url, callback, as_string) {
+function loadFile(url, callback, as_string) {
   var xhr = new XMLHttpRequest();
   xhr.open('GET', url);
   if (typeof as_string === 'undefined') xhr.responseType = 'arraybuffer';

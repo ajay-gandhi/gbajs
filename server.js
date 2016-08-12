@@ -4,7 +4,7 @@
 var express    = require('express'),
     bodyParser = require('body-parser'),
     fs         = require('fs'),
-    rp         = require('rp');
+    rp         = require('request-promise');
 
 // Local modules
 var UserDB = require('./userdb');
@@ -59,7 +59,7 @@ app.post('/createSave', function (req, res) {
     res.send(saved);
   } else {
     res.send(JSON.stringify({
-      message: saved ? saved : 'Failed to save game.';
+      message: saved ? saved : 'Failed to save game.'
     }));
   }
 });
@@ -92,8 +92,20 @@ app.post('/getSaveData', function (req, res) {
  * Get ROM url
  */
 app.post('/getRom', function (req, res) {
-  var url = users.get_rom_url(req.body.user_id, req.body.rom_name);
-  res.send(url);
+  var opts = {
+    uri: users.get_rom_url(req.body.user_id, req.body.rom_name),
+    encoding: null
+  }
+  rp(opts)
+    .then(function (response) {
+      var b64e = new Buffer(response, 'binary').toString('base64');
+      res.send(b64e);
+    })
+    .catch(function (e) {
+      // Invalid URL I guess
+      // Delete ROM
+      console.log('Error getting ROM from URL.');
+    });
 });
 
 /**

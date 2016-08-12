@@ -16,27 +16,28 @@
       url: 'listRoms'
     })
     .done(function(roms) {
+      roms = JSON.parse(roms);
+
       var selections = $('#selections').html('');
       roms.forEach(function (rom) { 
-        selections.append('<li>' + rom.substr(0, rom.length - 4) + '</li>');
+        selections.append('<li>' + rom + '</li>');
       });
 
       // Rom selected
       $('#selections li').click(function () {
         if (inflight) return;
-        var romName = $(this).text();
+        var rom_name = $(this).text();
 
         // Get saves
-        var local_saves = list_local_saves(romName);
+        var local_saves = list_local_saves(rom_name);
         $.ajax({
           url: 'listSaves',
-          data: { rom_name: romName }
+          data: { rom_name: rom_name }
         })
         .done(function(saves) {
           // No saves
-          return;
-          if (saves.length == 0 && local_saves.length == 0) {
-            goto_gba(romName);
+          if ((!saves || saves.length == 0) && local_saves.length == 0) {
+            goto_gba(rom_name);
             return;
           }
 
@@ -78,10 +79,10 @@
 
               // New game
               if ($(this).attr('data-savename') === '{{new_game}}') {
-                return goto_gba(romName);
+                return goto_gba(rom_name);
               }
               var is_local = $(this).attr('data-local') === 'true';
-              goto_gba(romName, $(this).attr('data-savename'), is_local);                
+              goto_gba(rom_name, $(this).attr('data-savename'), is_local);                
             });
           });
         });
