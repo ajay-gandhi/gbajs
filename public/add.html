@@ -20,8 +20,8 @@
         errors = 'Only alphanumeric and \' \' allowed.' + errors;
 
       // Validate ROM url
-      if (rom_link.substr(rom_link.length - 4) !== '.gba')
-        errors += 'URL must end in <code>\'.gba\'</code>';
+      if (ext(rom_link) !== '.gba')
+        errors += 'URL must have <code>\'.gba\'</code> extension.';
       else if (!/^(http|https):\/\//.test(rom_link))
         errors += 'URL must begin with <code>http(s)://</code>';
 
@@ -75,6 +75,14 @@
       $('#input-wrapper #add-rom-button').removeAttr('disabled');
       $('#input-wrapper #status-message').fadeOut();
     }, successful ? 2000 : 4000);
+  }
+
+  /**
+   * Gets file extension from URL
+   */
+  var ext = function (url) {
+    url = url.substr(1 + url.lastIndexOf('/')).split('?')[0].split('#')[0];
+    return url.substr(url.lastIndexOf('.'));
   }
   </script>
 </head>

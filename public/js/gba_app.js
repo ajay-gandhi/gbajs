@@ -1,5 +1,6 @@
 var gba;
 var runCommands = [];
+var PAUSED = false;
 
 try {
   gba = new GameBoyAdvance();
@@ -44,14 +45,12 @@ $(document).on('fully_ready', function () {
 
     if (!gba.audio.context) {
       // Remove the sound box if sound isn't available
-      var soundbox = document.getElementById('sound');
-      soundbox.parentElement.removeChild(soundbox);
+      $('#sound').remove();
     }
 
     if (window.navigator.appName == 'Microsoft Internet Explorer') {
       // Remove the pixelated option if it doesn't work
-      var pixelatedBox = document.getElementById('pixelated');
-      pixelatedBox.parentElement.removeChild(pixelatedBox);
+      $('#pixelated').remove();
     }
 
     // Parse querystring
@@ -107,6 +106,7 @@ $(document).on('fully_ready', function () {
   // Menu events
   $('#menu-open').click(function () {
     gba.pause();
+    PAUSED = true;
     $('<div class="cover" id="cover-dark"></div>')
       .appendTo('body')
       .fadeTo(400, 0.90);
@@ -119,6 +119,7 @@ $(document).on('fully_ready', function () {
     $('#menu').fadeOut(300);
     setTimeout(function () {
       gba.runStable();
+      PAUSED = false;
     }, 500);
   });
 
@@ -305,21 +306,21 @@ var start_game = function (game_name) {
     data: { 'rom_name': CURRENT_ROM }
   })
   .done(function (b64e_rom) {
-    rom = base64ToArrayBuffer(b64e_rom);
+    $('#screen-cover').remove();
+    rom = base64_decode(b64e_rom);
     gba.setRom(rom);
     for (var i = 0; i < runCommands.length; ++i) {
       runCommands[i]();
     }
     runCommands = [];
-    gba.runStable();
+    if (!PAUSED) gba.runStable();
   });
 }
 
-function base64ToArrayBuffer(base64) {
-  var binary_string =  window.atob(base64);
-  var len = binary_string.length;
-  var bytes = new Uint8Array( new ArrayBuffer(len) );
-  for (var i = 0; i < len; i++)        {
+function base64_decode(base64) {
+  var binary_string = window.atob(base64);
+  var bytes = new Uint8Array(new ArrayBuffer(binary_string.length));
+  for (var i = 0; i < binary_string.length; i++)        {
       bytes[i] = binary_string.charCodeAt(i);
   }
   return bytes.buffer;
@@ -366,10 +367,10 @@ var display_save_status = function (msg, successful) {
 /**
  * Conducts AJAX request to get the file
  */
-function loadFile(url, callback, as_string) {
+function loadFile(url, callback) {
   var xhr = new XMLHttpRequest();
   xhr.open('GET', url);
-  if (typeof as_string === 'undefined') xhr.responseType = 'arraybuffer';
+  xhr.responseType = 'arraybuffer';
 
   xhr.onload = function () { callback(xhr.response) };
   xhr.send();
