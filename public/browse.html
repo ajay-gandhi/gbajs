@@ -4,16 +4,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
   <title>GameBoy Advance</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <link rel="stylesheet" href="mobile.css">
+  <link rel="stylesheet" href="css/mobile.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-  <script src="login.js"></script>
+  <script src="js/login.js"></script>
   <script>
   var inflight = false;
   $(document).on('fully_ready', function () {
 
     // List ROMs
     $.ajax({
-      method: 'POST',
       url: 'listRoms'
     })
     .done(function(roms) {
@@ -30,12 +29,12 @@
         // Get saves
         var local_saves = list_local_saves(romName);
         $.ajax({
-          method: 'POST',
           url: 'listSaves',
           data: { gameName: romName }
         })
         .done(function(saves) {
           // No saves
+          return;
           if (saves.length == 0 && local_saves.length == 0) {
             goto_gba(romName);
             return;

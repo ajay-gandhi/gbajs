@@ -27,7 +27,7 @@ window.fbAsyncInit = function() {
   fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));
 
-var doc_ready, login_ready;
+var doc_ready, login_ready, user_id;
 
 $(document).ready(function () {
   doc_ready = true;
@@ -37,6 +37,7 @@ $(document).ready(function () {
 var check_login_status = function (response) {
   if (response.status === 'connected') {
     // logged in!
+    user_id = response.authResponse.userID;
     login_ready = true;
     is_ready();
 
@@ -49,6 +50,10 @@ var check_login_status = function (response) {
 // If document is ready and logged in, emit fully ready event
 var is_ready = function () {
   if (doc_ready && login_ready) {
+    $.ajaxSetup({
+      data: { user_id: user_id }
+    });
+
     $.event.trigger({
       type: 'fully_ready'
     });
@@ -56,12 +61,18 @@ var is_ready = function () {
 }
 
 // Intercept all AJAX calls and confirm logged in (just in case)
-var confirm_logged_in = function (e, data) {
+// Append FB user ID to data
+var confirm_logged_in = function (jqXHR, data) {
   if (login_ready) {
     return true;
+
+  // Redirect to login
   } else {
     window.location = login_page;
     return false;
   }
 }
-$.ajaxSetup({ beforeSend: confirm_logged_in });
+$.ajaxSetup({
+  method: 'POST',
+  beforeSend: confirm_logged_in
+});

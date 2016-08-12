@@ -24,7 +24,7 @@ try {
 
 var CURRENT_ROM;
 
-$(document).ready(function() {
+$(document).on('fully_ready', function() {
   window.addEventListener("orientationchange", update_canvas_size, false);
   update_canvas_size();
 
@@ -151,7 +151,6 @@ $(document).ready(function() {
 
       // Save to server
       $.ajax({
-        method: 'POST',
         url: 'createSave',
         data: {
           'savename': save_name,

@@ -37,6 +37,7 @@ app.post('/login', function (req, res) {
  * List available ROMs
  */
 app.post('/listRoms', function (req, res) {
+  console.log(req.body);
   fs.readdir(__dirname + '/roms', function (err, files) {
     if (err) return console.error(err);
     res.send(files);
@@ -47,6 +48,7 @@ app.post('/listRoms', function (req, res) {
  * List available save files
  */
 app.post('/listSaves', function (req, res) {
+  console.log(req.body);
   fs.readdir(__dirname + '/roms', function (err, files) {
     if (err) return console.error(err);
 
