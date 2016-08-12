@@ -50,7 +50,7 @@ module.exports = (function () {
    */
   UserDB.prototype.add_new_rom = function (uid, rom_name, rom_url) {
     var user = this.get_user(uid);
-    if (Object.keys(user.roms).length > MAX_ROMS)
+    if (!user.roms[rom_name] && Object.keys(user.roms).length > MAX_ROMS)
       return 'Limit of ' + MAX_ROMS + ' ROMs reached.';
 
     user.roms[rom_name] = {};
@@ -62,12 +62,12 @@ module.exports = (function () {
 
   /**
    * Add the save file to the user's list of saves. Returns false if the rom
-   * wasn't found, else true
+   * wasn't found, else true.
    */
   UserDB.prototype.update_save = function (uid, rom_name, save_name, save_data) {
     var user = this.get_user(uid);
     if (user.roms[rom_name]) {
-      if (Object.keys(user.roms[rom_name].saves).length > MAX_SAVES)
+      if (!user.roms[rom_name].saves[save_name] && Object.keys(user.roms[rom_name].saves).length > MAX_SAVES)
         return 'Limit of ' + MAX_ROMS + ' saves reached.';
 
       user.roms[rom_name].saves[save_name] = save_data;
@@ -106,6 +106,15 @@ module.exports = (function () {
   UserDB.prototype.get_rom_url = function (uid, rom_name) {
     var user = this.get_user(uid);
     return user.roms[rom_name] ? user.roms[rom_name].url : false;
+  }
+
+  /**
+   * Get a list of roms for the given user. Returns empty array if no roms
+   * exist.
+   */
+  UserDB.prototype.get_rom_list = function (uid) {
+    var user = this.get_user(uid);
+    return Object.keys(user.roms);
   }
 
   /**

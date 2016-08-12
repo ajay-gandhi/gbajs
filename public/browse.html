@@ -30,7 +30,7 @@
         var local_saves = list_local_saves(romName);
         $.ajax({
           url: 'listSaves',
-          data: { gameName: romName }
+          data: { rom_name: romName }
         })
         .done(function(saves) {
           // No saves

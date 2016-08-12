@@ -19,7 +19,7 @@ app.use(express.static(__dirname + '/public'));
 
 app.use(function (req, res, next) {
   if (req.method.toLowerCase() === 'post' && !req.body.user_id) {
-    console.log('Invalid user!', req.body);
+    console.log('Request without user!', req.body);
   }
   next();
 });
@@ -28,7 +28,7 @@ app.use(function (req, res, next) {
  * Add a ROM for a user
  */
 app.post('/addRom', function (req, res) {
-  var added = users.add_new_rom(req.body.user_id, req.body.name, req.body.url);
+  var added = users.add_new_rom(req.body.user_id, req.body.rom_name, req.body.rom_url);
   if (added == true) {
     users.page();
     res.send(true);
@@ -40,42 +40,62 @@ app.post('/addRom', function (req, res) {
 });
 
 /**
- * List available ROMs
+ * Create new save file
  */
-app.post('/listRoms', function (req, res) {
-  fs.readdir(__dirname + '/roms', function (err, files) {
-    if (err) return console.error('Error listing ROMs:', err);
-    res.send(files);
-  });
+app.post('/createSave', function (req, res) {
+  var saved = users.update_save(req.body.user_id, req.body.rom_name, req.body.save_name, req.body.save_data);
+  if (saved == true) {
+    users.page();
+    res.send(saved);
+  } else {
+    res.send(JSON.stringify({
+      message: saved ? saved : 'Failed to save game.';
+    }));
+  }
 });
 
 /**
  * List available save files
  */
 app.post('/listSaves', function (req, res) {
-  fs.readdir(__dirname + '/roms', function (err, files) {
-    if (err) return console.error(err);
-
-    var game = req.body.gameName;
-    res.send(files.filter(function (filename) {
-      return filename.substr(filename.indexOf('|') + 1) === game;
-    }));
-  });
+  var saves = users.get_saves(req.body.user_id, req.body.rom_name);
+  if (!saves) {
+    res.send({
+      message: 'Game not found.'
+    });
+  } else if (saves.length) {
+    res.send(JSON.stringify(saves));
+  } else {
+    res.send(false);
+  }
 });
 
 /**
- * Create new save file
+ * Get savedata
  */
-app.post('/createSave', function (req, res) {
-  var filepath = 'saves/' + req.body.savename + '|' + req.body.rom;
-  fs.writeFile(filepath, req.body.savedata, function (err) {
-    if (err) {
-      console.error(err);
-      res.send('false');
-    } else {
-      res.send('true');
-    }
-  });
+app.post('/getSaveData', function (req, res) {
+  var save_data = users.get_save_data(req.body.user_id, req.body.rom_name, req.body.save_name);
+  res.send(save_data);
+});
+
+/**
+ * Get ROM url
+ */
+app.post('/getRom', function (req, res) {
+  var url = users.get_rom_url(req.body.user_id, req.body.rom_name);
+  res.send(url);
+});
+
+/**
+ * List available ROMs
+ */
+app.post('/listRoms', function (req, res) {
+  var roms = users.get_rom_list(req.body.user_id);
+  if (roms.length > 0) {
+    res.send(JSON.stringify(roms));
+  } else {
+    res.send(false);
+  }
 });
 
 app.listen(app.get('port'), function () {
