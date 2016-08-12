@@ -14,16 +14,18 @@
       var rom_link = $('#rom-link').val();
       var rom_name = $('#rom-name').val();
 
-      // Validate ROM
+      // Validate ROM name
       var errors = '<br />';
       if (!/^[a-zA-Z0-9\s]*$/.test(rom_name))
         errors = 'Only alphanumeric and \' \' allowed.' + errors;
 
+      // Validate ROM url
       if (rom_link.substr(rom_link.length - 4) !== '.gba')
-        errors += 'URL must end with \'.gba\'.';
+        errors += 'URL must end in <code>\'.gba\'</code>';
+      else if (!/^(http|https):\/\//.test(rom_link))
+        errors += 'URL must begin with <code>http(s)://</code>';
 
       if (errors !== '<br />') {
-        $(this).removeAttr('disabled');
         display_status_message(errors, false);
         return;
       }
@@ -36,14 +38,21 @@
           'url': rom_link
         }
       })
-      .done(function (msg) {
-        var succeeded = msg.trim() === 'true';
-        if (succeeded) {
-          display_save_status('ROM added!', succeeded);
+      .done(function (status) {
+        if (status) {
+          display_status_message('<div class="full">ROM added!</div>', status);
         } else {
-          display_save_status(msg.trim(), false);
+          var full_msg = '<div class="full">' + status.message + '</div>';
+          display_status_message(status.message, false);
         }
       });
+    });
+
+    $('input').keypress(function (e) {
+      if (e.which == 13) {
+        $('#add-rom-button').click();
+        return false;
+      }
     });
   });
 
@@ -60,11 +69,12 @@
         .html(msg);
     }
 
+    $('#add-rom-button').removeAttr('disabled');
     $('#input-wrapper #status-message').fadeIn();
     setTimeout(function () {
       $('#input-wrapper #add-rom-button').removeAttr('disabled');
       $('#input-wrapper #status-message').fadeOut();
-    }, 2000);
+    }, successful ? 2000 : 4000);
   }
   </script>
 </head>

@@ -25,6 +25,21 @@ app.use(function (req, res, next) {
 });
 
 /**
+ * Add a ROM for a user
+ */
+app.post('/addRom', function (req, res) {
+  var added = users.add_new_rom(req.body.user_id, req.body.name, req.body.url);
+  if (added == true) {
+    users.page();
+    res.send(true);
+  } else {
+    res.send(JSON.stringify({
+      message: added ? added : 'Failed to add ROM.'
+    }));
+  }
+});
+
+/**
  * List available ROMs
  */
 app.post('/listRoms', function (req, res) {

@@ -4,6 +4,9 @@
 
 'use strict';
 
+var MAX_ROMS = 5;
+var MAX_SAVES = 5;
+
 var fs = require('fs');
 
 module.exports = (function () {
@@ -11,9 +14,10 @@ module.exports = (function () {
   function UserDB (path) {
     this.users = {};
     this.path = path;
+    var self = this;
     fs.readFile(path, function (err, data) {
       if (err && err.code !== 'ENOENT') console.error(err);
-      if (data) this.users = JSON.stringify(data);
+      if (data) self.users = JSON.parse(data);
     });
   }
 
@@ -46,10 +50,14 @@ module.exports = (function () {
    */
   UserDB.prototype.add_new_rom = function (uid, rom_name, rom_url) {
     var user = this.get_user(uid);
+    if (Object.keys(user.roms).length > MAX_ROMS)
+      return 'Limit of ' + MAX_ROMS + ' ROMs reached.';
+
     user.roms[rom_name] = {};
-    this.roms[rom_name].url = rom_url;
-    this.roms[rom_name].saves = {};
+    user.roms[rom_name].url = rom_url;
+    user.roms[rom_name].saves = {};
     this.set_user(user);
+    return true;
   }
 
   /**
@@ -59,6 +67,9 @@ module.exports = (function () {
   UserDB.prototype.update_save = function (uid, rom_name, save_name, save_data) {
     var user = this.get_user(uid);
     if (user.roms[rom_name]) {
+      if (Object.keys(user.roms[rom_name].saves).length > MAX_SAVES)
+        return 'Limit of ' + MAX_ROMS + ' saves reached.';
+
       user.roms[rom_name].saves[save_name] = save_data;
       this.set_user(user);
       return true;

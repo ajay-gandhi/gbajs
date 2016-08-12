@@ -126,3 +126,7 @@ div#container h1 {
   background-color: #d9534f;
   border: 2px solid #9d1713;
 }
+#input-wrapper #status-message .full {
+  height: 100%;
+  padding-top: 17px;
+}
