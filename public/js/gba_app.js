@@ -4,7 +4,7 @@ var runCommands = [];
 try {
   gba = new GameBoyAdvance();
   gba.keypad.eatInput = true;
-  gba.setLogger(function(error) {
+  gba.setLogger(function (error) {
     console.log(error);
     gba.pause();
     var screen = document.getElementById('screen');
@@ -24,7 +24,7 @@ try {
 
 var CURRENT_ROM;
 
-$(document).on('fully_ready', function() {
+$(document).on('fully_ready', function () {
   window.addEventListener("orientationchange", update_canvas_size, false);
   update_canvas_size();
 
@@ -34,12 +34,12 @@ $(document).on('fully_ready', function() {
 
     gba.logLevel = gba.LOG_ERROR;
     // report fps
-    // gba.reportFPS = function(fps) {
+    // gba.reportFPS = function (fps) {
     //   var counter = document.getElementById('fps');
     //   counter.textContent = Math.floor(fps);
     // };
 
-    loadRom('gbajs/assets/bios.bin', function(bios) {
+    loadRom('gbajs/assets/bios.bin', function (bios) {
       gba.setBios(bios);
     });
 
@@ -58,6 +58,7 @@ $(document).on('fully_ready', function() {
     // Parse querystring
     var qs = window.location.search.substring(1).split('&');
     CURRENT_ROM = qs.shift().split('=').pop();
+    $('title').text($('title').text() + ' | ' + CURRENT_ROM);
 
     if (qs.length) {
 
@@ -158,7 +159,7 @@ $(document).on('fully_ready', function() {
           'rom': decodeURIComponent(CURRENT_ROM)
         }
       })
-      .done(function(msg) {
+      .done(function (msg) {
         var succeeded = msg.trim() === 'true';
         var msg = succeeded ? 'Game saved!' : 'Game failed to save.';
         display_save_status(msg, succeeded);
@@ -183,7 +184,7 @@ function run(file) {
   load.removeAttribute('onclick');
   var pause = document.getElementById('pause');
   pause.textContent = "PAUSE";
-  gba.loadRomFromFile(file, function(result) {
+  gba.loadRomFromFile(file, function (result) {
     if (result) {
       for (var i = 0; i < runCommands.length; ++i) {
         runCommands[i]();
@@ -192,9 +193,9 @@ function run(file) {
       gba.runStable();
     } else {
       load.textContent = 'FAILED';
-      setTimeout(function() {
+      setTimeout(function () {
         load.textContent = 'SELECT';
-        load.onclick = function() {
+        load.onclick = function () {
           document.getElementById('loader').click();
         }
       }, 3000);
@@ -218,7 +219,7 @@ function reset() {
   } else {
     lcdFade(gba.context, gba.targetCanvas.getContext('2d'), gba.video.drawCallback);
   }
-  load.onclick = function() {
+  load.onclick = function () {
     document.getElementById('loader').click();
   }
 }
@@ -238,7 +239,7 @@ function screenshot() {
 
 function lcdFade(context, target, callback) {
   var i = 0;
-  var drawInterval = setInterval(function() {
+  var drawInterval = setInterval(function () {
     i++;
     var pixelData = context.getImageData(0, 0, 240, 160);
     for (var y = 0; y < 160; ++y) {
@@ -320,6 +321,9 @@ var localStorage_avail = function () {
   }
 }
 
+/**
+ * Display a status message over the input and button in the menu
+ */
 var display_save_status = function (msg, successful) {
   if (successful) {
     $('#save-interface #save-status')
@@ -348,7 +352,7 @@ function loadRom(url, callback, as_string) {
   xhr.open('GET', url);
   if (typeof as_string === 'undefined') xhr.responseType = 'arraybuffer';
 
-  xhr.onload = function() { callback(xhr.response) };
+  xhr.onload = function () { callback(xhr.response) };
   xhr.send();
 }
 

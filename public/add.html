@@ -1,0 +1,82 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <title>GBA Play | Add ROM</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/interface.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  <script src="js/login.js"></script>
+  <script>
+  $(document).on('fully_ready', function () {
+    $('#add-rom-button').click(function () {
+      $(this).prop('disabled', 'true');
+      var rom_link = $('#rom-link').val();
+      var rom_name = $('#rom-name').val();
+
+      // Validate ROM
+      var errors = '<br />';
+      if (!/^[a-zA-Z0-9\s]*$/.test(rom_name))
+        errors = 'Only alphanumeric and \' \' allowed.' + errors;
+
+      if (rom_link.substr(rom_link.length - 4) !== '.gba')
+        errors += 'URL must end with \'.gba\'.';
+
+      if (errors !== '<br />') {
+        $(this).removeAttr('disabled');
+        display_status_message(errors, false);
+        return;
+      }
+
+      // Send to server
+      $.ajax({
+        url: 'addRom',
+        data: {
+          'name': rom_name,
+          'url': rom_link
+        }
+      })
+      .done(function (msg) {
+        var succeeded = msg.trim() === 'true';
+        if (succeeded) {
+          display_save_status('ROM added!', succeeded);
+        } else {
+          display_save_status(msg.trim(), false);
+        }
+      });
+    });
+  });
+
+  var display_status_message = function (msg, successful) {
+    if (successful) {
+      $('#input-wrapper #status-message')
+        .removeClass('failure')
+        .addClass('success')
+        .html(msg);
+    } else {
+      $('#input-wrapper #status-message')
+        .removeClass('success')
+        .addClass('failure')
+        .html(msg);
+    }
+
+    $('#input-wrapper #status-message').fadeIn();
+    setTimeout(function () {
+      $('#input-wrapper #add-rom-button').removeAttr('disabled');
+      $('#input-wrapper #status-message').fadeOut();
+    }, 2000);
+  }
+  </script>
+</head>
+<body>
+  <div id="container">
+    <h1>GBA Play</h1>
+    <div id="input-wrapper">
+      <input type="text" id="rom-name" placeholder="ROM name" autofocus="true" />
+      <input type="text" id="rom-link" placeholder="Direct link to ROM"/>
+      <button id="add-rom-button" class="btn">Add ROM</button>
+      <div id="status-message"></div>
+    </div>
+  </div>
+</body>
+</html>

@@ -6,9 +6,9 @@ var express    = require('express'),
     fs         = require('fs');
 
 // Local modules
-var FB = require('./fb');
+var UserDB = require('./userdb');
 
-var facebook = new FB();
+var users = new UserDB('users.json');
 
 // Set up express
 var app = express();
@@ -16,30 +16,20 @@ app.set('port', (process.env.PORT || 8000));
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(express.static(__dirname + '/public'));
-app.use('/roms', express.static(__dirname + '/roms'));
-app.use('/saves', express.static(__dirname + '/saves'));
 
-/**
- * Verify access token
- */
-app.post('/login', function (req, res) {
-  facebook
-    .verify_token(req.body.token)
-    .then(function (verified) {
-      if (verified) {
-        console.log('Verified user:', req.body.user_id);
-      }
-      res.send(verified);
-    });
+app.use(function (req, res, next) {
+  if (req.method.toLowerCase() === 'post' && !req.body.user_id) {
+    console.log('Invalid user!', req.body);
+  }
+  next();
 });
 
 /**
  * List available ROMs
  */
 app.post('/listRoms', function (req, res) {
-  console.log(req.body);
   fs.readdir(__dirname + '/roms', function (err, files) {
-    if (err) return console.error(err);
+    if (err) return console.error('Error listing ROMs:', err);
     res.send(files);
   });
 });
@@ -48,7 +38,6 @@ app.post('/listRoms', function (req, res) {
  * List available save files
  */
 app.post('/listSaves', function (req, res) {
-  console.log(req.body);
   fs.readdir(__dirname + '/roms', function (err, files) {
     if (err) return console.error(err);
 
