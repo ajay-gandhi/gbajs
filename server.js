@@ -95,7 +95,7 @@ app.post('/getRom', function (req, res) {
   var rom_url = users.get_rom_url(req.body.user_id, req.body.rom_name);
   if (!rom_url) return res.send(false);
   var opts = {
-    uri: rom_url;
+    uri: rom_url,
     encoding: null
   }
   rp(opts)
