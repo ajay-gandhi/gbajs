@@ -187,6 +187,14 @@ $(document).on('fully_ready', function () {
         window.location = 'browse.html';
       });
   });
+
+  // Submit on enter for input
+  $('input').keypress(function (e) {
+    if (e.which == 13) {
+      $('#save-interface #create-save').click();
+      return false;
+    }
+  });
 });
 
 function run(file) {
