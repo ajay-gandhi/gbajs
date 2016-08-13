@@ -127,7 +127,11 @@
     $('#search').on('change keyup paste', function () {
       var searchterm = $(this).val().toLowerCase();
       $('ul').children(':not(.bold)').each(function () {
-        var hide = $(this).text().toLowerCase().indexOf(searchterm) < 0;
+        var hide = $(this).contents().filter(function () { 
+          return this.nodeType == 3; 
+        })[0].nodeValue.toLowerCase().indexOf(searchterm) < 0;
+
+        // var hide = $(this).text().toLowerCase().indexOf(searchterm) < 0;
         $(this).toggleClass('hidden', hide);
       });
     });
@@ -180,6 +184,11 @@
     </div>
     <footer>
     <p>Ajay Gandhi <a href="http://ajay-gandhi.com">ajay-gandhi.com</a></p>
+    <div class="right">
+      <a href="/">Home</a>
+      &bull;
+      <a href="add.html">Add ROM</a>
+    </div>
     </footer>
   </div>
 </body>
