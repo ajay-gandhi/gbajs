@@ -120,6 +120,24 @@ app.post('/listRoms', function (req, res) {
   }
 });
 
+/**
+ * Delete a ROM
+ */
+app.post('/deleteRom', function (req, res) {
+  var deleted = users.delete_rom(req.body.user_id, req.body.rom_name);
+  users.page();
+  res.send(deleted);
+});
+
+/**
+ * Delete a save
+ */
+app.post('/deleteSave', function (req, res) {
+  var deleted = users.delete_save(req.body.user_id, req.body.rom_name, req.body.save_name);
+  users.page();
+  res.send(deleted);
+});
+
 app.listen(app.get('port'), function () {
   console.log('Serving on port', app.get('port'));
 });

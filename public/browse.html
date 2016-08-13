@@ -20,16 +20,17 @@
 
       var selections = $('#selections').html('');
       roms.forEach(function (rom) { 
-        selections.append('<li>' + rom + '</li>');
+        selections.append('<li data-rom-name="' + rom + '">' + rom +
+          '<button class="delete-button">Delete</button></li>');
       });
 
       // Rom selected
       $('#selections li').click(function () {
         if (inflight) return;
-        var rom_name = $(this).text();
+        var rom_name = $(this).attr('data-rom-name');
 
         // Get saves
-        var local_saves = list_local_saves(rom_name);
+        var local_saves = list_local_saves(rom_name) || [];
         $.ajax({
           url: 'listSaves',
           data: { rom_name: rom_name }
@@ -52,7 +53,9 @@
             $('#select-game').prepend('<div class="note">choose a save</div>');
 
             // Add new game option
-            $('<li style="display:none;" class="bold" data-savename="{{new_game}}">New Game</li>')
+            $('<li style="display:none;" class="bold"' +
+              'data-savename="{{new_game}}">New Game' +
+              '<button class="delete-button">Delete</button></li>')
               .appendTo(selections);
 
             local_saves.forEach(function (save) { 
@@ -84,7 +87,38 @@
               var is_local = $(this).attr('data-local') === 'true';
               goto_gba(rom_name, $(this).attr('data-savename'), is_local);                
             });
+
+            // Delete save
+            $('.delete-button').click(function () {
+              var li = $(this).parent('li');
+
+              $.ajax({
+                url: 'deleteSave',
+                data: {
+                  rom_name: rom_name,
+                  save_name: li.attr('data-savename')
+                }
+              })
+              .done(function (msg) {
+                if (msg) li.slideUp('normal', function () { $(this).remove(); });
+              });
+            });
           });
+        });
+      });
+
+      // Delete ROM
+      $('.delete-button').click(function (e) {
+        e.stopPropagation();
+        var li = $(this).parent('li');
+        var rom_name = li.attr('data-rom-name');
+
+        $.ajax({
+          url: 'deleteRom',
+          data: { rom_name: rom_name }
+        })
+        .done(function (msg) {
+          if (msg) li.slideUp('normal', function () { $(this).remove(); });
         });
       });
     });

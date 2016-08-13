@@ -88,6 +88,7 @@ ul#selections {
   border-top: none;
 }
 ul#selections li {
+  position: relative;
   cursor: pointer;
   padding: 10px;
   font-size: 16px;
@@ -102,12 +103,23 @@ ul#selections li:first-child {
 ul#selections li.bold {
   font-weight: bold;
 }
+ul#selections li.hidden {
+  display: none;
+}
+ul#selections .delete-button {
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  right: 5px;
+  background-color: #fff;
+  border: none;
+  border-left: 1px solid #ccc;
+  padding: 0px 5px 0px 10px;
+  color: #333;
+}
 ul#selections span {
   color: #888;
   font-size: 16px;
-}
-ul#selections li.hidden {
-  display: none;
 }
 
 /**
@@ -117,9 +129,6 @@ ul#selections li.hidden {
   padding-top: 30%;
   font-size: 30px;
   text-align: center;
-}
-button {
-  padding: 10px;
 }
 
 /**
@@ -134,6 +143,7 @@ button {
 .portrait #controls button {
   background-color: #fff;
   border: 1px solid #ccc;
+  padding: 10px;
 }
 .portrait #controls button:active {
   border: 1px solid #888;
@@ -251,6 +261,7 @@ button {
 .landscape #controls button {
   background-color: #fff;
   border: 1px solid #ccc;
+  padding: 10px;
 }
 .landscape #controls button:active {
   border: 1px solid #888;

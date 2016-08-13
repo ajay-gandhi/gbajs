@@ -5,10 +5,13 @@
 
 var login_page = 'index.html';
 
+var test = '270976436620957',
+    real = '270085160043418';
+
 // FB SDK
 window.fbAsyncInit = function() {
   FB.init({
-    appId      : '270085160043418',
+    appId      : test,
     cookie     : true,
     xfbml      : true,
     version    : 'v2.5'
