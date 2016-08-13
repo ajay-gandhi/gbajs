@@ -104,7 +104,7 @@ app.post('/getRom', function (req, res) {
     .catch(function (e) {
       // Invalid URL I guess
       // Delete ROM
-      console.log('Error getting ROM from URL.');
+      console.log('Error getting ROM from URL:', e);
     });
 });
 

@@ -41,6 +41,7 @@
         $('#fb-button').removeClass('glow');
         FB.api('/me', function (res) {
           $('#status').text(msg + res.name.split(' ')[0] + '!');
+          $('footer').fadeIn();
 
           // Display browse button after 1 second
           setTimeout(function () {
@@ -60,6 +61,7 @@
         });
         $('#status').stop().fadeIn();
         $('#browse-button').stop().fadeOut();
+        $('footer').fadeOut();
 
         if (response.status === 'not_authorized') {
           $('#status').text('Please login to this app.');
@@ -71,12 +73,19 @@
   }
   </script>
   <div id="container">
-    <h1>GBA Play</h1>
-    <div id="status">Checking login status...</div>
-    <a id="browse-button" class="btn" href="browse.html">Browse Games</a>
-    <div class="center">
-      <fb:login-button id="fb-button" scope="public_profile,email" onlogin="check_login_state('Welcome, ');" size="xlarge" auto-logout-link="true"></fb:login-button>
+    <div id="content">
+      <h1>GBA Play</h1>
+      <div id="status">Checking login status...</div>
+      <a id="browse-button" class="btn" href="browse.html">Browse Games</a>
+      <div class="center">
+        <fb:login-button id="fb-button" scope="public_profile,email" onlogin="check_login_state('Welcome, ');" size="xlarge" auto-logout-link="true"></fb:login-button>
+      </div>
     </div>
+    <footer>
+      <a href="/">Home</a> &bull;
+      <a href="browse.html">Browse</a> &bull;
+      <a href="add.html">Add ROM</a>
+    </footer>
   </div>
 </body>
 </html>

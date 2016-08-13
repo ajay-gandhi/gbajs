@@ -48,12 +48,15 @@
       });
     });
 
+    // Submit ROM on enter
     $('input').keypress(function (e) {
       if (e.which == 13) {
         $('#add-rom-button').click();
         return false;
       }
     });
+
+    $('footer').fadeIn();
   });
 
   var display_status_message = function (msg, successful) {
@@ -88,13 +91,20 @@
 </head>
 <body>
   <div id="container">
-    <h1>GBA Play</h1>
-    <div id="input-wrapper">
-      <input type="text" id="rom-name" placeholder="ROM name" autofocus="true" />
-      <input type="text" id="rom-link" placeholder="Direct link to ROM"/>
-      <button id="add-rom-button" class="btn">Add ROM</button>
-      <div id="status-message"></div>
+    <div id="content">
+      <h1>GBA Play</h1>
+      <div id="input-wrapper">
+        <input type="text" id="rom-name" placeholder="ROM name" autofocus="true" />
+        <input type="text" id="rom-link" placeholder="Direct link to ROM"/>
+        <button id="add-rom-button" class="btn">Add ROM</button>
+        <div id="status-message"></div>
+      </div>
     </div>
+    <footer>
+      <a href="/">Home</a> &bull;
+      <a href="browse.html">Browse</a> &bull;
+      <a href="add.html">Add ROM</a>
+    </footer>
   </div>
 </body>
 </html>

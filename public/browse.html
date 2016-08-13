@@ -128,7 +128,7 @@
       var searchterm = $(this).val().toLowerCase();
       $('ul').children(':not(.bold)').each(function () {
         var hide = $(this).contents().filter(function () { 
-          return this.nodeType == 3; 
+          return this.nodeType == 3;
         })[0].nodeValue.toLowerCase().indexOf(searchterm) < 0;
 
         // var hide = $(this).text().toLowerCase().indexOf(searchterm) < 0;
