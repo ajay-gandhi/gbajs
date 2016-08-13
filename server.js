@@ -92,8 +92,10 @@ app.post('/getSaveData', function (req, res) {
  * Get ROM url
  */
 app.post('/getRom', function (req, res) {
+  var rom_url = users.get_rom_url(req.body.user_id, req.body.rom_name);
+  if (!rom_url) return res.send(false);
   var opts = {
-    uri: users.get_rom_url(req.body.user_id, req.body.rom_name),
+    uri: rom_url;
     encoding: null
   }
   rp(opts)
