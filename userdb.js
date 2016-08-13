@@ -29,7 +29,7 @@ module.exports = (function () {
     if (user) return user;
 
     // User didn't exist, create new
-    this.set_user(uid, {
+    this.save_user({
       user_id: uid,
       roms: {}
     });
@@ -39,8 +39,8 @@ module.exports = (function () {
   /**
    * Updates a user in the database
    */
-  UserDB.prototype.set_user = function (uid, user_data) {
-    this.users[uid] = user_data;
+  UserDB.prototype.save_user = function (user_data) {
+    this.users[user_data.user_id] = user_data;
   }
 
   /****************************** Public Methods ******************************/
@@ -56,7 +56,7 @@ module.exports = (function () {
     user.roms[rom_name] = {};
     user.roms[rom_name].url = rom_url;
     user.roms[rom_name].saves = {};
-    this.set_user(user);
+    this.save_user(user);
     return true;
   }
 
@@ -71,7 +71,7 @@ module.exports = (function () {
         return 'Limit of ' + MAX_ROMS + ' saves reached.';
 
       user.roms[rom_name].saves[save_name] = save_data;
-      this.set_user(user);
+      this.save_user(user);
       return true;
     } else {
       return false;
@@ -115,6 +115,30 @@ module.exports = (function () {
   UserDB.prototype.get_rom_list = function (uid) {
     var user = this.get_user(uid);
     return Object.keys(user.roms);
+  }
+
+  /**
+   * Delete a ROM. Returns false if ROM didn't exist
+   */
+  UserDB.prototype.delete_rom = function (uid, rom_name) {
+    var user = this.get_user(uid);
+    var deleted = user.roms[rom_name] ? delete user.roms[rom_name] : false;
+    this.save_user(user);
+    return deleted;
+  }
+
+  /**
+   * Delete a save. Returns false if the save didn't exist
+   */
+  UserDB.prototype.delete_save = function (uid, rom_name, save_name) {
+    var user = this.get_user(uid);
+    if (user.roms[rom_name] && user.roms[rom_name].saves[save_name]) {
+      delete user.roms[rom_name].saves[save_name];
+      this.save_user(user);
+      return true;
+    } else {
+      return false;
+    }
   }
 
   /**
