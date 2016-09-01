@@ -29,7 +29,10 @@ module.exports = (function () {
 
       client
         .query('SELECT * FROM users')
-        .on('row', self.save_user);
+        .on('row', function (row) {
+          console.log(row);
+          self.users[user_data.fb_user_id] = user_data;
+        });
     });
   }
 
