@@ -31,7 +31,7 @@ module.exports = (function () {
         .query('SELECT * FROM users')
         .on('row', function (row) {
           console.log(row);
-          self.users[user_data.fb_user_id] = user_data;
+          self.users[row.fb_user_id] = row;
         });
     });
   }
