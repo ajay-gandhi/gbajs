@@ -10,7 +10,6 @@ var express    = require('express'),
 var UserDB = require('./postgres');
 
 var users = new UserDB();
-console.log(users);
 
 // // Set up express
 var app = express();
@@ -34,6 +33,7 @@ app.post('/addRom', function (req, res) {
   rp(req.body.rom_url)
     .then(function () {
       var added = users.add_new_rom(req.body.user_id, req.body.rom_name, req.body.rom_url);
+      console.log('added rom:', added);
       if (added == true) {
         users.page();
         res.send(true);

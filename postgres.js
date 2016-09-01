@@ -69,7 +69,6 @@ module.exports = (function () {
    */
   PostGres.prototype.add_new_rom = function (fb_uid, rom_name, rom_url) {
     var user = this.get_user(fb_uid);
-    console.log('got:', user);
     if (!user.roms[rom_name] && Object.keys(user.roms).length > MAX_ROMS)
       return 'Limit of ' + MAX_ROMS + ' ROMs reached.';
 
@@ -176,6 +175,7 @@ module.exports = (function () {
 
     } else {
       // New addition to db
+      console.log('gonna page:', user);
       self.client
         .query('INSERT INTO users (fb_user_id, data) ' +
           "VALUES ('" + fb_uid + "', '" + JSON.stringify(user.roms) + "') " +
