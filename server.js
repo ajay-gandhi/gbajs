@@ -7,11 +7,11 @@ var express    = require('express'),
     rp         = require('request-promise');
 
 // Local modules
-var UserDB = require('./userdb');
+var UserDB = require('./postgres');
 
-var users = new UserDB('users.json');
+var users = new UserDB();
 
-// Set up express
+// // Set up express
 var app = express();
 app.set('port', (process.env.PORT || 8000));
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -34,7 +34,7 @@ app.post('/addRom', function (req, res) {
     .then(function () {
       var added = users.add_new_rom(req.body.user_id, req.body.rom_name, req.body.rom_url);
       if (added == true) {
-        users.page();
+        users.page(req.body.user_id);
         res.send(true);
       } else {
         res.send(JSON.stringify({
@@ -55,7 +55,7 @@ app.post('/addRom', function (req, res) {
 app.post('/createSave', function (req, res) {
   var saved = users.update_save(req.body.user_id, req.body.rom_name, req.body.save_name, req.body.save_data);
   if (saved == true) {
-    users.page();
+    users.page(req.body.user_id);
     res.send(saved);
   } else {
     res.send(JSON.stringify({
@@ -127,7 +127,7 @@ app.post('/listRoms', function (req, res) {
  */
 app.post('/deleteRom', function (req, res) {
   var deleted = users.delete_rom(req.body.user_id, req.body.rom_name);
-  users.page();
+  users.page(req.body.user_id);
   res.send(deleted);
 });
 
@@ -136,7 +136,7 @@ app.post('/deleteRom', function (req, res) {
  */
 app.post('/deleteSave', function (req, res) {
   var deleted = users.delete_save(req.body.user_id, req.body.rom_name, req.body.save_name);
-  users.page();
+  users.page(req.body.user_id);
   res.send(deleted);
 });
 
