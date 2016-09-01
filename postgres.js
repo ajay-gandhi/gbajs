@@ -33,6 +33,7 @@ module.exports = (function () {
         .query('SELECT * FROM users')
         .on('row', function (row) {
           self.users[row.fb_user_id] = row;
+          console.log('init', row);
         });
     });
     return this;
@@ -67,12 +68,14 @@ module.exports = (function () {
    */
   PostGres.prototype.add_new_rom = function (fb_uid, rom_name, rom_url) {
     var user = this.get_user(fb_uid);
+    console.log('got:', user);
     if (!user.roms[rom_name] && Object.keys(user.roms).length > MAX_ROMS)
       return 'Limit of ' + MAX_ROMS + ' ROMs reached.';
 
     user.roms[rom_name] = {};
     user.roms[rom_name].url = rom_url;
     user.roms[rom_name].saves = {};
+    console.log('setting:', user);
     this.save_user(user);
     return true;
   }
