@@ -26,7 +26,7 @@ module.exports = (function () {
       client.query('CREATE TABLE IF NOT EXISTS users (' +
         'user_id SERIAL PRIMARY KEY, ' +
         'fb_user_id varchar(20) NOT NULL, ' +
-        'data text NOT NULL' +
+        'roms text NOT NULL' +
       ')');
 
       client
@@ -131,7 +131,6 @@ module.exports = (function () {
    */
   PostGres.prototype.get_rom_list = function (fb_uid) {
     var user = this.get_user(fb_uid);
-    console.log(user);
     return Object.keys(user.roms);
   }
 
@@ -168,15 +167,15 @@ module.exports = (function () {
 
     if (user.user_id) {
       // Update
-      self.client.query("UPDATE users SET data = '" + JSON.stringify(user.roms) +
+      self.client.query("UPDATE users SET roms = '" + JSON.stringify(user.roms) +
         "' WHERE user_id = '" + user.user_id + "'");
 
     } else {
       // New addition to db
       self.client
-        .query('INSERT INTO users (fb_user_id, data) ' +
+        .query('INSERT INTO users (fb_user_id, roms) ' +
           "VALUES ('" + fb_uid + "', '" + JSON.stringify(user.roms) + "') " +
-          'RETURNING user_id, fb_user_id, data')
+          'RETURNING user_id, fb_user_id, roms')
         .on('row', function (row) {
           self.save_user(row);
         });
