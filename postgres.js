@@ -29,7 +29,7 @@ module.exports = (function () {
 
       client
         .query('SELECT * FROM users')
-        .on('row', this.save_user);
+        .on('row', self.save_user);
     });
   }
 
@@ -158,19 +158,20 @@ module.exports = (function () {
    */
   PostGres.prototype.page = function (fb_uid) {
     var user = this.get_user(fb_uid);
+    var self = this;
 
     if (user.user_id) {
       // Update
-      this.client.query("UPDATE users SET data = '" + JSON.stringify(user.roms) +
+      self.client.query("UPDATE users SET data = '" + JSON.stringify(user.roms) +
         "' WHERE user_id = '" + user.user_id + "'");
 
     } else {
       // New addition to db
-      this.client
+      self.client
         .query('INSERT INTO users (fb_user_id, data) ' +
           "VALUES ('" + fb_uid + "', '" + JSON.stringify(user.roms) + "') " +
           'RETURNING user_id, fb_user_id, data')
-        .on('row', this.save_user);
+        .on('row', self.save_user);
     }
   }
 
