@@ -29,12 +29,15 @@ module.exports = (function () {
       //     console.log(JSON.stringify(row));
       //   });
 
+      client.query('DROP TABLE users');
+
+      console.log('dropped table');
+
       client
         .query('CREATE TABLE IF NOT EXISTS users (' +
-          'user_id varchar(45) NOT NULL, ' +
+          'user_id SERIAL PRIMARY KEY, ' +
           'fb_user_id varchar(20) NOT NULL, ' +
           'data text NOT NULL, ' +
-          'PRIMARY KEY (user_id) ' +
         ')');
 
       console.log('table exists');
