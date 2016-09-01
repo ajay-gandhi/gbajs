@@ -35,6 +35,7 @@ module.exports = (function () {
           self.users[row.fb_user_id] = row;
         });
     });
+    return this;
   }
 
   /**
