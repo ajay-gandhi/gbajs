@@ -29,10 +29,6 @@ module.exports = (function () {
       //     console.log(JSON.stringify(row));
       //   });
 
-      client.query('DROP TABLE users');
-
-      console.log('dropped table');
-
       client
         .query('CREATE TABLE IF NOT EXISTS users (' +
           'user_id SERIAL PRIMARY KEY, ' +
