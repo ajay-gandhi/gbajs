@@ -25,6 +25,12 @@ module.exports = (function () {
       console.log('Connected to postgres! Getting schemas...');
 
       client
+        .query('SELECT table_schema,table_name FROM information_schema.tables;')
+        .on('row', function(row) {
+          console.log(JSON.stringify(row));
+        });
+
+      client
         .query('CREATE TABLE IF NOT EXISTS users (' +
           'user_id varchar(45) NOT NULL, ' +
           'fb_user_id varchar(20) NOT NULL, ' +
