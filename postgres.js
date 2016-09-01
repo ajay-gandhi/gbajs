@@ -25,18 +25,22 @@ module.exports = (function () {
       console.log('Connected to postgres! Getting schemas...');
 
       client
-        .query("CREATE TABLE IF NOT EXISTS users (" +
-          "user_id varchar(45) NOT NULL, " +
-          "fb_user_id varchar(20) NOT NULL, " +
-          "data text NOT NULL, " +
-          "PRIMARY KEY (user_id) " +
+        .query('CREATE TABLE IF NOT EXISTS users (' +
+          'user_id varchar(45) NOT NULL, ' +
+          'fb_user_id varchar(20) NOT NULL, ' +
+          'data text NOT NULL, ' +
+          'PRIMARY KEY (user_id) ' +
         ')');
+
+      client
+        .query('INSERT INTO users (fb_user_id, data) ' +
+          'VALUES ("1", "this is the data")');
 
       client
         .query('SELECT * FROM users')
         .on('row', function (row) {
+          console.log(row);
           this.users[row['user_id']] = row['data'];
-          console.log(JSON.stringify(row));
         });
     });
   }
