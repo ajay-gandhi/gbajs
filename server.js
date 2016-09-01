@@ -12,8 +12,8 @@ var UserDB = require('./postgres');
 var users = new UserDB();
 
 // // Set up express
-// var app = express();
-// app.set('port', (process.env.PORT || 8000));
+var app = express();
+app.set('port', (process.env.PORT || 8000));
 // app.use(bodyParser.urlencoded({ extended: true }));
 
 // app.use(express.static(__dirname + '/public'));
