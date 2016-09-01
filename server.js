@@ -33,9 +33,8 @@ app.post('/addRom', function (req, res) {
   rp(req.body.rom_url)
     .then(function () {
       var added = users.add_new_rom(req.body.user_id, req.body.rom_name, req.body.rom_url);
-      console.log('added rom:', added);
       if (added == true) {
-        users.page();
+        users.page(req.body.user_id);
         res.send(true);
       } else {
         res.send(JSON.stringify({
@@ -56,7 +55,7 @@ app.post('/addRom', function (req, res) {
 app.post('/createSave', function (req, res) {
   var saved = users.update_save(req.body.user_id, req.body.rom_name, req.body.save_name, req.body.save_data);
   if (saved == true) {
-    users.page();
+    users.page(req.body.user_id);
     res.send(saved);
   } else {
     res.send(JSON.stringify({
@@ -128,7 +127,7 @@ app.post('/listRoms', function (req, res) {
  */
 app.post('/deleteRom', function (req, res) {
   var deleted = users.delete_rom(req.body.user_id, req.body.rom_name);
-  users.page();
+  users.page(req.body.user_id);
   res.send(deleted);
 });
 
@@ -137,7 +136,7 @@ app.post('/deleteRom', function (req, res) {
  */
 app.post('/deleteSave', function (req, res) {
   var deleted = users.delete_save(req.body.user_id, req.body.rom_name, req.body.save_name);
-  users.page();
+  users.page(req.body.user_id);
   res.send(deleted);
 });
 

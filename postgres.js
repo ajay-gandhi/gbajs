@@ -33,7 +33,6 @@ module.exports = (function () {
         .query('SELECT * FROM users')
         .on('row', function (row) {
           self.users[row.fb_user_id] = row;
-          console.log('init', row);
         });
     });
     return this;
@@ -58,7 +57,6 @@ module.exports = (function () {
    * Updates a user in the database
    */
   PostGres.prototype.save_user = function (user_data) {
-    console.log('saving:', this.users, user_data);
     this.users[user_data.fb_user_id] = user_data;
   }
 
@@ -75,7 +73,6 @@ module.exports = (function () {
     user.roms[rom_name] = {};
     user.roms[rom_name].url = rom_url;
     user.roms[rom_name].saves = {};
-    console.log('setting:', user);
     this.save_user(user);
     return true;
   }
@@ -175,14 +172,11 @@ module.exports = (function () {
 
     } else {
       // New addition to db
-      console.log('gonna page:', user);
       self.client
         .query('INSERT INTO users (fb_user_id, data) ' +
           "VALUES ('" + fb_uid + "', '" + JSON.stringify(user.roms) + "') " +
           'RETURNING user_id, fb_user_id, data')
-        .on('row', function (row) {
-          console.log('Paged and received:', row);
-        });
+        .on('row', self.save_user);
     }
   }
 
