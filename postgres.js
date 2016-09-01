@@ -30,7 +30,9 @@ module.exports = (function () {
           "fb_user_id varchar(20) NOT NULL, " +
           "data text NOT NULL, " +
           "PRIMARY KEY (user_id) " +
-        ')')
+        ')');
+
+      client
         .query('SELECT * FROM users')
         .on('row', function (row) {
           this.users[row['user_id']] = row['data'];
