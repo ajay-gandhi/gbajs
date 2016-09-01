@@ -133,6 +133,7 @@ module.exports = (function () {
   PostGres.prototype.get_rom_list = function (fb_uid) {
     var user = this.get_user(fb_uid);
     console.log('list', this.users);
+    console.log(Object.keys(user.roms));
     return Object.keys(user.roms);
   }
 
