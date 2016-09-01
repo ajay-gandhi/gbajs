@@ -183,7 +183,7 @@ module.exports = (function () {
           self.save_user({
             user_id: row.user_id,
             fb_user_id: row.fb_user_id,
-            roms: JSON.parse(roms)
+            roms: JSON.parse(row.roms)
           });
         });
     }
