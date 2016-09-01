@@ -57,7 +57,6 @@ module.exports = (function () {
    * Updates a user in the database
    */
   PostGres.prototype.save_user = function (user_data) {
-    console.log(this.users);
     this.users[user_data.fb_user_id] = user_data;
   }
 
@@ -178,7 +177,6 @@ module.exports = (function () {
           "VALUES ('" + fb_uid + "', '" + JSON.stringify(user.roms) + "') " +
           'RETURNING user_id, fb_user_id, data')
         .on('row', function (row) {
-          console.log(this);
           self.save_user(row);
         });
     }
