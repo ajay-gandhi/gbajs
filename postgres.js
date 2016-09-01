@@ -21,8 +21,6 @@ module.exports = (function () {
 
       self.client = client;
 
-      client.query('DROP TABLE users');
-
       client.query('CREATE TABLE IF NOT EXISTS users (' +
         'user_id SERIAL PRIMARY KEY, ' +
         'fb_user_id varchar(20) NOT NULL, ' +
