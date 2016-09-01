@@ -37,7 +37,7 @@ module.exports = (function () {
         .query('CREATE TABLE IF NOT EXISTS users (' +
           'user_id SERIAL PRIMARY KEY, ' +
           'fb_user_id varchar(20) NOT NULL, ' +
-          'data text NOT NULL, ' +
+          'data text NOT NULL' +
         ')');
 
       console.log('table exists');
