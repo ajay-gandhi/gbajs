@@ -10,6 +10,7 @@ var express    = require('express'),
 var UserDB = require('./postgres');
 
 var users = new UserDB();
+console.log(users);
 
 // // Set up express
 var app = express();
