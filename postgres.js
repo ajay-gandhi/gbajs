@@ -21,7 +21,7 @@ module.exports = (function () {
 
       self.client = client;
 
-      client.query('TRUNCATE TABLE users');
+      client.query('DROP TABLE users');
 
       client.query('CREATE TABLE IF NOT EXISTS users (' +
         'user_id SERIAL PRIMARY KEY, ' +
