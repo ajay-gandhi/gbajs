@@ -74,6 +74,7 @@ module.exports = (function () {
     user.roms[rom_name].url = rom_url;
     user.roms[rom_name].saves = {};
     this.save_user(user);
+    console.log('adding', this.users);
     return true;
   }
 
@@ -131,6 +132,7 @@ module.exports = (function () {
    */
   PostGres.prototype.get_rom_list = function (fb_uid) {
     var user = this.get_user(fb_uid);
+    console.log('list', this.users);
     return Object.keys(user.roms);
   }
 
