@@ -33,6 +33,7 @@ module.exports = (function () {
         .query('SELECT * FROM users')
         .on('row', function (row) {
           self.users[row.fb_user_id] = row;
+          self.users[row.fb_user_id].roms = JSON.parse(self.users[row.fb_user_id].roms);
         });
     });
     return this;
@@ -179,7 +180,11 @@ module.exports = (function () {
           "VALUES ('" + fb_uid + "', '" + JSON.stringify(user.roms) + "') " +
           'RETURNING user_id, fb_user_id, roms')
         .on('row', function (row) {
-          self.save_user(row);
+          self.save_user({
+            user_id: row.user_id,
+            fb_user_id: row.fb_user_id,
+            roms: JSON.parse(roms)
+          });
         });
     }
   }
