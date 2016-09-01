@@ -22,13 +22,12 @@ module.exports = (function () {
 
     pg.connect(process.env.DATABASE_URL, function (err, client) {
       if (err) throw err;
-      console.log('Connected to postgres! Getting schemas...');
 
-      client
-        .query('SELECT table_schema,table_name FROM information_schema.tables;')
-        .on('row', function(row) {
-          console.log(JSON.stringify(row));
-        });
+      // client
+      //   .query('SELECT table_schema,table_name FROM information_schema.tables;')
+      //   .on('row', function(row) {
+      //     console.log(JSON.stringify(row));
+      //   });
 
       client
         .query('CREATE TABLE IF NOT EXISTS users (' +
@@ -38,9 +37,11 @@ module.exports = (function () {
           'PRIMARY KEY (user_id) ' +
         ')');
 
+      console.log('table exists');
+
       client
         .query('INSERT INTO users (fb_user_id, data) ' +
-          'VALUES ("1", "this is the data")');
+          "VALUES ('1', 'this is the data')");
 
       client
         .query('SELECT * FROM users')
