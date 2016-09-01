@@ -15,10 +15,10 @@ module.exports = (function () {
   function PostGres () {
     this.users = {};
     var self = this;
-    fs.readFile(path, function (err, data) {
-      if (err && err.code !== 'ENOENT') console.error(err);
-      if (data) self.users = JSON.parse(data);
-    });
+    // fs.readFile(path, function (err, data) {
+    //   if (err && err.code !== 'ENOENT') console.error(err);
+    //   if (data) self.users = JSON.parse(data);
+    // });
 
     pg.connect(process.env.DATABASE_URL, function (err, client) {
       if (err) throw err;
