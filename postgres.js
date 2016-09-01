@@ -21,6 +21,8 @@ module.exports = (function () {
 
       self.client = client;
 
+      client.query('TRUNCATE TABLE users');
+
       client.query('CREATE TABLE IF NOT EXISTS users (' +
         'user_id SERIAL PRIMARY KEY, ' +
         'fb_user_id varchar(20) NOT NULL, ' +
@@ -30,7 +32,6 @@ module.exports = (function () {
       client
         .query('SELECT * FROM users')
         .on('row', function (row) {
-          console.log(row);
           self.users[row.fb_user_id] = row;
         });
     });
