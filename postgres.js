@@ -177,7 +177,10 @@ module.exports = (function () {
         .query('INSERT INTO users (fb_user_id, data) ' +
           "VALUES ('" + fb_uid + "', '" + JSON.stringify(user.roms) + "') " +
           'RETURNING user_id, fb_user_id, data')
-        .on('row', self.save_user);
+        .on('row', function (row) {
+          console.log(this);
+          self.save_user(row);
+        });
     }
   }
 
