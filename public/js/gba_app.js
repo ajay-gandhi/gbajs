@@ -162,6 +162,8 @@ $(document).on('fully_ready', function () {
 
     } else {
       var savedata = gba.getSavedata();
+      console.log(savedata.length);
+      return;
 
       // Save to server
       $.ajax({
