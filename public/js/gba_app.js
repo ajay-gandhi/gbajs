@@ -163,7 +163,7 @@ $(document).on('fully_ready', function () {
     } else {
       var savedata = gba.getSavedata();
 
-      var page_size = 8000;
+      var page_size = 4000;
       var split_savedata = [];
       while (savedata.length > page_size) {
         var part = savedata.substr(0, page_size);
@@ -173,21 +173,30 @@ $(document).on('fully_ready', function () {
       split_savedata.push(savedata);
 
       // Save to server
-      $.ajax({
-        url: 'createSave',
-        data: {
-          'save_name': save_name,
-          'save_data': split_savedata.join('\n'),
-          // 'page': i,
-          // 'total_pages': split_savedata.length,
-          'rom': CURRENT_ROM
-        }
-      })
-      .done(function (msg) {
-        var succeeded = msg.trim() === 'true';
-        var msg = succeeded ? 'Game saved!' : 'Game failed to save.';
-        display_save_status(msg, succeeded);
-      });
+      var send_next_piece = function (data, page) {
+        $.ajax({
+          url: 'createSave',
+          data: {
+            'save_name': save_name,
+            'save_data': data[page],
+            'page': page,
+            'total_pages': data.length,
+            'rom': CURRENT_ROM
+          }
+        })
+        .done(function (msg) {
+          if (page == data.length - 1) {
+            // Sent all pieces
+            var succeeded = msg.trim() === 'true';
+            var msg = succeeded ? 'Game saved!' : 'Game failed to save.';
+            display_save_status(msg, succeeded);
+
+          } else {
+            send_next_piece(data, page + 1);
+          }
+        });
+      }
+      send_next_piece(split_savedata, 0);
     }
   });
 

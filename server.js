@@ -53,27 +53,17 @@ app.post('/addRom', function (req, res) {
  * Create new save file
  * Complicated because the save is in pieces
  */
+var holders = {};
 app.post('/createSave', function (req, res) {
   var complete = false;
   var uid = req.body.user_id;
 
-  if (holder[uid]) {
-    // Received middle or last piece of save data
-    holder[uid][req.body.page] = req.body.save_data;
-    complete = holder[uid].reduce(function (acc, c) {
-      return acc && c;
-    }, true);
+  if (!holders[uid]) holders[uid] = [];
 
-  } else {
-    // Received first piece of savedata
-    holder[uid] = Array(req.body.total_pages).fill(false);
-    holder[uid][req.body.page] = req.body.save_data;
-    complete = req.body.total_pages == 1;
-  }
-
-  if (complete) {
-    var save_data = holder[uid].join('');
-    var saved = users.update_save(uid, req.body.rom_name, req.body.save_name, save_data);
+  holders[uid].push(req.body.save_data);
+  if (req.body.page == req.body.total_pages + 1) {
+    var data = holders[uid].join('');
+    var saved = users.update_save(uid, req.body.rom_name, req.body.save_name, data);
     if (saved == true) {
       users.page(uid);
       res.send(saved);
