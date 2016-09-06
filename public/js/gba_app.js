@@ -163,7 +163,7 @@ $(document).on('fully_ready', function () {
     } else {
       var savedata = gba.getSavedata();
 
-      var page_size = 4000;
+      var page_size = 8000;
       var split_savedata = [];
       while (savedata.length > page_size) {
         var part = savedata.substr(0, page_size);
