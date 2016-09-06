@@ -167,8 +167,8 @@ $(document).on('fully_ready', function () {
       var split_savedata = [];
       while (savedata.length > 0) {
         if (savedata.length > page_size) {
-          var part = split_savedata.substr(0, page_size);
-          split_savedata = split_savedata.substr(page_size);
+          var part = savedata.substr(0, page_size);
+          savedata = savedata.substr(page_size);
           split_savedata.push(part);
         } else {
           split_savedata.push(savedata);
