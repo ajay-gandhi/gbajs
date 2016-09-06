@@ -162,23 +162,37 @@ $(document).on('fully_ready', function () {
 
     } else {
       var savedata = gba.getSavedata();
-      console.log(savedata.length);
-      return;
+
+      var page_size = 4000;
+      var split_savedata = [];
+      while (savedata.length > 0) {
+        if (savedata.length > page_size) {
+          var part = split_savedata.substr(0, page_size);
+          split_savedata = split_savedata.substr(page_size);
+          split_savedata.push(part);
+        } else {
+          split_savedata.push(savedata);
+        }
+      }
 
       // Save to server
-      $.ajax({
-        url: 'createSave',
-        data: {
-          'savename': save_name,
-          'savedata': savedata,
-          'rom': CURRENT_ROM
-        }
-      })
-      .done(function (msg) {
-        var succeeded = msg.trim() === 'true';
-        var msg = succeeded ? 'Game saved!' : 'Game failed to save.';
-        display_save_status(msg, succeeded);
-      });
+      for (var i = 0; i < split_savedata.length; i++) {
+        $.ajax({
+          url: 'createSave',
+          data: {
+            'savename': save_name,
+            'savedata': split_savedata[i],
+            'page': i,
+            'total_pages': split_savedata.length,
+            'rom': CURRENT_ROM
+          }
+        })
+        .done(function (msg) {
+          var succeeded = msg.trim() === 'true';
+          var msg = succeeded ? 'Game saved!' : 'Game failed to save.';
+          display_save_status(msg, succeeded);
+        });
+      }
     }
   });
 
