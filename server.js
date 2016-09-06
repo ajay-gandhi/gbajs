@@ -58,22 +58,22 @@ app.post('/createSave', function (req, res) {
   var complete = false;
   var uid = req.body.user_id;
 
-  if (holder[uid]) {
+  if (holders[uid]) {
     // Received middle or last piece of save data
-    holder[uid][req.body.page] = req.body.save_data;
-    complete = holder[uid].reduce(function (acc, c) {
+    holders[uid][req.body.page] = req.body.save_data;
+    complete = holders[uid].reduce(function (acc, c) {
       return acc && c;
     }, true);
 
   } else {
     // Received first piece of savedata
-    holder[uid] = Array(req.body.total_pages).fill(false);
-    holder[uid][req.body.page] = req.body.save_data;
+    holders[uid] = Array(req.body.total_pages).fill(false);
+    holders[uid][req.body.page] = req.body.save_data;
     complete = req.body.total_pages == 1;
   }
 
   if (complete) {
-    var save_data = holder[uid].join('');
+    var save_data = holders[uid].join('');
     var saved = users.update_save(uid, req.body.rom_name, req.body.save_name, save_data);
     if (saved == true) {
       users.page(uid);
