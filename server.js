@@ -53,36 +53,16 @@ app.post('/addRom', function (req, res) {
  * Create new save file
  * Complicated because the save is in pieces
  */
-var holders = {};
 app.post('/createSave', function (req, res) {
-  var complete = false;
-  var uid = req.body.user_id;
-
-  if (holders[uid]) {
-    // Received middle or last piece of save data
-    holders[uid][req.body.page] = req.body.save_data;
-    complete = holders[uid].reduce(function (acc, c) {
-      return acc && c;
-    }, true);
-
+  var save_data = req.body.save_data.replace(/(\r\n|\n|\r)/gm, '');
+  var saved = users.update_save(req.body.user_id, req.body.rom_name, req.body.save_name, save_data);
+  if (saved == true) {
+    users.page(req.body.user_id);
+    res.send(saved);
   } else {
-    // Received first piece of savedata
-    holders[uid] = Array(req.body.total_pages).fill(false);
-    holders[uid][req.body.page] = req.body.save_data;
-    complete = req.body.total_pages == 1;
-  }
-
-  if (complete) {
-    var save_data = holders[uid].join('');
-    var saved = users.update_save(uid, req.body.rom_name, req.body.save_name, save_data);
-    if (saved == true) {
-      users.page(uid);
-      res.send(saved);
-    } else {
-      res.send(JSON.stringify({
-        message: saved ? saved : 'Failed to save game.'
-      }));
-    }
+    res.send(JSON.stringify({
+      message: saved ? saved : 'Failed to save game.'
+    }));
   }
 });
 

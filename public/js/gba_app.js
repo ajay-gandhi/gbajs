@@ -173,23 +173,21 @@ $(document).on('fully_ready', function () {
       split_savedata.push(savedata);
 
       // Save to server
-      for (var i = 0; i < split_savedata.length; i++) {
-        $.ajax({
-          url: 'createSave',
-          data: {
-            'savename': save_name,
-            'savedata': split_savedata[i],
-            'page': i,
-            'total_pages': split_savedata.length,
-            'rom': CURRENT_ROM
-          }
-        })
-        .done(function (msg) {
-          var succeeded = msg.trim() === 'true';
-          var msg = succeeded ? 'Game saved!' : 'Game failed to save.';
-          display_save_status(msg, succeeded);
-        });
-      }
+      $.ajax({
+        url: 'createSave',
+        data: {
+          'save_name': save_name,
+          'save_data': split_savedata.join('\n'),
+          // 'page': i,
+          // 'total_pages': split_savedata.length,
+          'rom': CURRENT_ROM
+        }
+      })
+      .done(function (msg) {
+        var succeeded = msg.trim() === 'true';
+        var msg = succeeded ? 'Game saved!' : 'Game failed to save.';
+        display_save_status(msg, succeeded);
+      });
     }
   });
 
