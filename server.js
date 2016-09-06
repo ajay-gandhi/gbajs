@@ -72,6 +72,8 @@ app.post('/createSave', function (req, res) {
         message: saved ? saved : 'Failed to save game.'
       }));
     }
+  } else {
+    res.send(true);
   }
 });
 
