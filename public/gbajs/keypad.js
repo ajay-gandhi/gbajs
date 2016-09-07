@@ -149,7 +149,7 @@ GameBoyAdvanceKeypad.prototype.registerHandlers = function() {
 			});
 		});
 
-	$('window')
+	$(window)
 		.on('keydown', ':not(input)', function (e) {
 			this.keyboardHandler(e);
 		})
