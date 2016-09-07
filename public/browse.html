@@ -8,6 +8,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
   <script src="js/login.js"></script>
   <script>
+  var LOCALSTORAGE_KEY = 'com.herokuapp.gbaplay.save';
   var inflight = false;
   $(document).on('fully_ready', function () {
 
@@ -100,12 +101,11 @@
                 var sram = this.mmu.save;
                 try {
                   var storage = window.localStorage;
-                  var key = 'com.herokuapp.gbaplay.save';
 
-                  var parsed_storage = JSON.parse(storage[key]);
+                  var parsed_storage = JSON.parse(storage[LOCALSTORAGE_KEY]);
                   delete parsed_storage[rom][li.attr('data-savename')];
 
-                  storage[key] = JSON.stringify(parsed_storage);
+                  storage[LOCALSTORAGE_KEY] = JSON.stringify(parsed_storage);
                   li.slideUp('normal', function () { $(this).remove(); });
                 } catch (e) {}
 
@@ -182,10 +182,9 @@
     rom = encodeURIComponent(rom);
     try {
       var storage = window.localStorage;
-      var key = 'com.ajay-gandhi.gbajs.save';
-      if (!storage[key]) return [];
+      if (!storage[LOCALSTORAGE_KEY]) return [];
 
-      var parsed_storage = JSON.parse(storage[key]);
+      var parsed_storage = JSON.parse(storage[LOCALSTORAGE_KEY]);
       if (!parsed_storage[rom]) return [];
 
       return Object.keys(parsed_storage[rom]);

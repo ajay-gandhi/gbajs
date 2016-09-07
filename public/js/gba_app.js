@@ -43,10 +43,10 @@ $(document).on('fully_ready', function () {
       gba.setBios(bios);
     });
 
-    // if (!gba.audio.context) {
+    if (!gba.audio.context) {
       // Remove the sound box if sound isn't available
       $('#sound').remove();
-    // }
+    }
 
     if (window.navigator.appName == 'Microsoft Internet Explorer') {
       // Remove the pixelated option if it doesn't work
