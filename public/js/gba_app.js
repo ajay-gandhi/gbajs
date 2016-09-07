@@ -76,7 +76,7 @@ $(document).on('fully_ready', function () {
         $.ajax({
           url: 'getSaveData',
           data: {
-            'save_name': save_name,
+            'save_name': save,
             'rom_name': CURRENT_ROM
           }
         })
@@ -87,7 +87,7 @@ $(document).on('fully_ready', function () {
 
           } else {
             runCommands.push(function () {
-              gba.decodeBase64(e);
+              gba.decodeBase64(savedata);
             });
 
             // Load rom
@@ -163,20 +163,39 @@ $(document).on('fully_ready', function () {
     } else {
       var savedata = gba.getSavedata();
 
+      var page_size = 4000;
+      var split_savedata = [];
+      while (savedata.length > page_size) {
+        var part = savedata.substr(0, page_size);
+        savedata = savedata.substr(page_size);
+        split_savedata.push(part);
+      }
+      split_savedata.push(savedata);
+
       // Save to server
-      $.ajax({
-        url: 'createSave',
-        data: {
-          'savename': save_name,
-          'savedata': savedata,
-          'rom': CURRENT_ROM
-        }
-      })
-      .done(function (msg) {
-        var succeeded = msg.trim() === 'true';
-        var msg = succeeded ? 'Game saved!' : 'Game failed to save.';
-        display_save_status(msg, succeeded);
-      });
+      var send_next_piece = function (data, page) {
+        $.ajax({
+          url: 'createSave',
+          data: {
+            'save_name': save_name,
+            'save_data': data[page],
+            'page': page,
+            'total_pages': data.length,
+            'rom_name': CURRENT_ROM
+          }
+        })
+        .done(function (succeeded) {
+          if (page == data.length - 1) {
+            // Sent all pieces
+            var msg = succeeded ? 'Game saved!' : 'Game failed to save.';
+            display_save_status(msg, succeeded);
+
+          } else {
+            send_next_piece(data, page + 1);
+          }
+        });
+      }
+      send_next_piece(split_savedata, 0);
     }
   });
 

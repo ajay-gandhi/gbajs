@@ -3,7 +3,6 @@
 // NPM modules
 var express    = require('express'),
     bodyParser = require('body-parser'),
-    fs         = require('fs'),
     rp         = require('request-promise');
 
 // Local modules
@@ -51,16 +50,29 @@ app.post('/addRom', function (req, res) {
 
 /**
  * Create new save file
+ * Complicated because the save is in pieces
  */
+var holders = {};
 app.post('/createSave', function (req, res) {
-  var saved = users.update_save(req.body.user_id, req.body.rom_name, req.body.save_name, req.body.save_data);
-  if (saved == true) {
-    users.page(req.body.user_id);
-    res.send(saved);
+  var complete = false;
+  var uid = req.body.user_id;
+
+  if (!holders[uid]) holders[uid] = [];
+
+  holders[uid].push(req.body.save_data);
+  if (parseInt(req.body.page) + 1 == parseInt(req.body.total_pages)) {
+    var data = holders[uid].join('');
+    var saved = users.update_save(uid, req.body.rom_name, req.body.save_name, data);
+    if (saved == true) {
+      users.page(uid);
+      res.send(saved);
+    } else {
+      res.send(JSON.stringify({
+        message: saved ? saved : 'Failed to save game.'
+      }));
+    }
   } else {
-    res.send(JSON.stringify({
-      message: saved ? saved : 'Failed to save game.'
-    }));
+    res.send(true);
   }
 });
 
