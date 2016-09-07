@@ -150,6 +150,6 @@ GameBoyAdvanceKeypad.prototype.registerHandlers = function() {
 		});
 
 	$('window')
-		.on('keydown', ':not(input)', this.keyboardHandler);
+		.on('keydown', ':not(input)', this.keyboardHandler)
 		.on('keyup',   ':not(input)', this.keyboardHandler);
 };
