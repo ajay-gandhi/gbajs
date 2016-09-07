@@ -37,10 +37,11 @@
         })
         .done(function(saves) {
           // No saves
-          if ((!saves || saves.length == 0) && local_saves.length == 0) {
+          if (!saves && local_saves.length == 0) {
             goto_gba(rom_name);
             return;
           }
+          saves = JSON.parse(saves);
 
           // Display saves
           $.when(
