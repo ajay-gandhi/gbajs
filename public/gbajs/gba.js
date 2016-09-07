@@ -4,7 +4,7 @@ function GameBoyAdvance() {
   this.LOG_STUB = 4;
   this.LOG_INFO = 8;
 
-  this.SYS_ID = 'com.ajay-gandhi.gbajs';
+  this.SYS_ID = 'com.herokuapp.gbaplay';
 
   this.logLevel = this.LOG_ERROR | this.LOG_WARN;
 

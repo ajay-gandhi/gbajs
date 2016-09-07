@@ -55,20 +55,21 @@
 
             // Add new game option
             $('<li style="display:none;" class="bold"' +
-              'data-savename="{{new_game}}">New Game' +
-              '<button class="delete-button">Delete</button></li>')
+              'data-savename="{{new_game}}">New Game</li>')
               .appendTo(selections);
 
             local_saves.forEach(function (save) { 
               var new_li = '<li style="display:none;" data-local="true" ' +
-                'data-savename="' + save + '"><span>Local </span>' + save + '</li>';
+                'data-savename="' + save + '"><span>Local </span>' + save +
+                '<button class="delete-button">Delete</button></li>';
 
               $(new_li).appendTo(selections);
             });
 
             saves.forEach(function (save) { 
               var new_li = '<li style="display:none;" data-local="false" ' +
-                'data-savename="' + save + '">' + save + '</li>';
+                'data-savename="' + save + '">' + save +
+                '<button class="delete-button">Delete</button></li>';
 
               $(new_li).appendTo(selections);
             });
@@ -92,17 +93,38 @@
             // Delete save
             $('.delete-button').click(function () {
               var li = $(this).parent('li');
+              var is_local = li.attr('data-local') === 'true';
 
-              $.ajax({
-                url: 'deleteSave',
-                data: {
-                  rom_name: rom_name,
-                  save_name: li.attr('data-savename')
-                }
-              })
-              .done(function (msg) {
-                if (msg) li.slideUp('normal', function () { $(this).remove(); });
-              });
+              if (is_local) {
+                var sram = this.mmu.save;
+                try {
+                  var storage = window.localStorage;
+                  var key = 'com.herokuapp.gbaplay.save';
+
+                  var parsed_storage = JSON.parse(storage[key]);
+                  delete parsed_storage[rom][li.attr('data-savename')];
+
+                  storage[key] = JSON.stringify(parsed_storage);
+                  li.slideUp('normal', function () { $(this).remove(); });
+                } catch (e) {}
+
+              } else {
+                // Delete from server
+                $.ajax({
+                  url: 'deleteSave',
+                  data: {
+                    rom_name: rom_name,
+                    save_name: li.attr('data-savename')
+                  }
+                })
+                .done(function (msg) {
+                  if (msg) {
+                    li.slideUp('normal', function () {
+                      $(this).remove();
+                    });
+                  }
+                });
+              }
             });
           });
         });
