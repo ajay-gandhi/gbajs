@@ -184,11 +184,9 @@ $(document).on('fully_ready', function () {
             'rom_name': CURRENT_ROM
           }
         })
-        .done(function (msg) {
-          console.log(msg);
+        .done(function (succeeded) {
           if (page == data.length - 1) {
             // Sent all pieces
-            var succeeded = msg.trim() === 'true';
             var msg = succeeded ? 'Game saved!' : 'Game failed to save.';
             display_save_status(msg, succeeded);
 

@@ -62,19 +62,16 @@ app.post('/createSave', function (req, res) {
   holders[uid].push(req.body.save_data);
   if (parseInt(req.body.page) + 1 == parseInt(req.body.total_pages)) {
     var data = holders[uid].join('');
-    console.log(data.length, req.body.rom_name);
     var saved = users.update_save(uid, req.body.rom_name, req.body.save_name, data);
     if (saved == true) {
       users.page(uid);
       res.send(saved);
     } else {
-      console.log('saved status', saved);
       res.send(JSON.stringify({
         message: saved ? saved : 'Failed to save game.'
       }));
     }
   } else {
-    console.log('here');
     res.send(true);
   }
 });
