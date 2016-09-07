@@ -60,10 +60,9 @@ app.post('/createSave', function (req, res) {
   if (!holders[uid]) holders[uid] = [];
 
   holders[uid].push(req.body.save_data);
-  console.log(parseInt(req.body.page) + 1, parseInt(req.body.total_pages));
   if (parseInt(req.body.page) + 1 == parseInt(req.body.total_pages)) {
-    console.log('full save size', holders[uid].length);
     var data = holders[uid].join('');
+    console.log(data.length, req.body.rom_name);
     var saved = users.update_save(uid, req.body.rom_name, req.body.save_name, data);
     if (saved == true) {
       users.page(uid);

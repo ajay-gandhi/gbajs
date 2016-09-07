@@ -181,7 +181,7 @@ $(document).on('fully_ready', function () {
             'save_data': data[page],
             'page': page,
             'total_pages': data.length,
-            'rom': CURRENT_ROM
+            'rom_name': CURRENT_ROM
           }
         })
         .done(function (msg) {
