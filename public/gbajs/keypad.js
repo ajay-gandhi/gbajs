@@ -81,7 +81,7 @@ GameBoyAdvanceKeypad.prototype.keyboardHandler = function(e) {
 		this.currentDown |= toggle;
 	}
 
-	if (this.eatInput && e.preventDefault) {
+	if (this.eatInput && e.preventDefault && e.target.toLowerCase() !== 'input') {
 		e.preventDefault();
 	}
 };
@@ -149,11 +149,6 @@ GameBoyAdvanceKeypad.prototype.registerHandlers = function() {
 			});
 		});
 
-	$(window)
-		.on('keydown', ':not(input)', function (e) {
-			this.keyboardHandler(e);
-		})
-		.on('keyup',   ':not(input)', function (e) {
-			this.keyboardHandler(e);
-		});
+	window.addEventListener('keydown', this.keyboardHandler.bind(this), true);
+	window.addEventListener('keyup', this.keyboardHandler.bind(this), true);
 };
