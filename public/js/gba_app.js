@@ -185,6 +185,7 @@ $(document).on('fully_ready', function () {
           }
         })
         .done(function (msg) {
+          console.log(msg);
           if (page == data.length - 1) {
             // Sent all pieces
             var succeeded = msg.trim() === 'true';
