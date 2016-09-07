@@ -60,8 +60,7 @@ app.post('/createSave', function (req, res) {
   if (!holders[uid]) holders[uid] = [];
 
   holders[uid].push(req.body.save_data);
-  console.log('at page', req.body.page, 'out of', req.body.total_pages);
-  if (req.body.page == req.body.total_pages + 1) {
+  if (req.body.page + 1 == req.body.total_pages) {
     var data = holders[uid].join('');
     console.log('full save size', data.length);
     var saved = users.update_save(uid, req.body.rom_name, req.body.save_name, data);
