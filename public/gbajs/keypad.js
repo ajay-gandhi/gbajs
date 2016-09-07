@@ -133,19 +133,23 @@ GameBoyAdvanceKeypad.prototype.pollGamepads = function() {
 
 GameBoyAdvanceKeypad.prototype.registerHandlers = function() {
 	var self = this;
-	$('#controls button').on('touchstart mousedown', function(e) {
-		var key = $(this).attr('id').toUpperCase();
-		self.keyboardHandler({
-			keyCode: self['KEYCODE_' + key],
-			type: 'keydown'
+	$('#controls button')
+		.on('touchstart mousedown', function(e) {
+			var key = $(this).attr('id').toUpperCase();
+			self.keyboardHandler({
+				keyCode: self['KEYCODE_' + key],
+				type: 'keydown'
+			});
+		})
+		.on('touchend mouseup', function(e) {
+			var key = $(this).attr('id').toUpperCase();
+			self.keyboardHandler({
+				keyCode: self['KEYCODE_' + key],
+				type: 'keyup'
+			});
 		});
-	});
-	$('#controls button').on('touchend mouseup', function(e) {
-		var key = $(this).attr('id').toUpperCase();
-		self.keyboardHandler({
-			keyCode: self['KEYCODE_' + key],
-			type: 'keyup'
-		});
-	});
-	window.addEventListener("keydown", this.keyboardHandler.bind(this), true);
-	window.addEventListener("keyup", this.keyboardHandler.bind(this), true);};
+
+	$('window')
+		.on('keydown', ':not(input)', this.keyboardHandler);
+		.on('keyup',   ':not(input)', this.keyboardHandler);
+};
