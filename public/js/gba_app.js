@@ -87,7 +87,7 @@ $(document).on('fully_ready', function () {
 
           } else {
             runCommands.push(function () {
-              gba.decodeBase64(e);
+              gba.decodeBase64(savedata);
             });
 
             // Load rom
