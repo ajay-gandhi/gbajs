@@ -76,7 +76,7 @@ $(document).on('fully_ready', function () {
         $.ajax({
           url: 'getSaveData',
           data: {
-            'save_name': save_name,
+            'save_name': save,
             'rom_name': CURRENT_ROM
           }
         })
