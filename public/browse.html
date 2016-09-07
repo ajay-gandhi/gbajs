@@ -102,7 +102,7 @@
                   var storage = window.localStorage;
 
                   var parsed_storage = JSON.parse(storage[LOCALSTORAGE_KEY]);
-                  delete parsed_storage[rom][li.attr('data-savename')];
+                  delete parsed_storage[rom_name][li.attr('data-savename')];
 
                   storage[LOCALSTORAGE_KEY] = JSON.stringify(parsed_storage);
                   li.slideUp('normal', function () { $(this).remove(); });
