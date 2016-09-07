@@ -179,7 +179,7 @@
    * Gets list of games from localStorage
    */
   var list_local_saves = function (rom) {
-    rom = encodeURIComponent(rom);
+    rom = decodeURIComponent(rom);
     try {
       var storage = window.localStorage;
       if (!storage[LOCALSTORAGE_KEY]) return [];
