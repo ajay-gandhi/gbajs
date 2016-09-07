@@ -8,6 +8,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
   <script src="js/login.js"></script>
   <script>
+  var LOCALSTORAGE_KEY = 'com.herokuapp.gbaplay.save';
   var inflight = false;
   $(document).on('fully_ready', function () {
 
@@ -55,20 +56,21 @@
 
             // Add new game option
             $('<li style="display:none;" class="bold"' +
-              'data-savename="{{new_game}}">New Game' +
-              '<button class="delete-button">Delete</button></li>')
+              'data-savename="{{new_game}}">New Game</li>')
               .appendTo(selections);
 
             local_saves.forEach(function (save) { 
               var new_li = '<li style="display:none;" data-local="true" ' +
-                'data-savename="' + save + '"><span>Local </span>' + save + '</li>';
+                'data-savename="' + save + '"><span>Local </span>' + save +
+                '<button class="delete-button">Delete</button></li>';
 
               $(new_li).appendTo(selections);
             });
 
             saves.forEach(function (save) { 
               var new_li = '<li style="display:none;" data-local="false" ' +
-                'data-savename="' + save + '">' + save + '</li>';
+                'data-savename="' + save + '">' + save +
+                '<button class="delete-button">Delete</button></li>';
 
               $(new_li).appendTo(selections);
             });
@@ -90,19 +92,39 @@
             });
 
             // Delete save
-            $('.delete-button').click(function () {
+            $('.delete-button').click(function (e) {
+              e.stopPropagation();
               var li = $(this).parent('li');
+              var is_local = li.attr('data-local') === 'true';
 
-              $.ajax({
-                url: 'deleteSave',
-                data: {
-                  rom_name: rom_name,
-                  save_name: li.attr('data-savename')
-                }
-              })
-              .done(function (msg) {
-                if (msg) li.slideUp('normal', function () { $(this).remove(); });
-              });
+              if (is_local) {
+                try {
+                  var storage = window.localStorage;
+
+                  var parsed_storage = JSON.parse(storage[LOCALSTORAGE_KEY]);
+                  delete parsed_storage[rom_name][li.attr('data-savename')];
+
+                  storage[LOCALSTORAGE_KEY] = JSON.stringify(parsed_storage);
+                  li.slideUp('normal', function () { $(this).remove(); });
+                } catch (e) {}
+
+              } else {
+                // Delete from server
+                $.ajax({
+                  url: 'deleteSave',
+                  data: {
+                    rom_name: rom_name,
+                    save_name: li.attr('data-savename')
+                  }
+                })
+                .done(function (msg) {
+                  if (msg) {
+                    li.slideUp('normal', function () {
+                      $(this).remove();
+                    });
+                  }
+                });
+              }
             });
           });
         });
@@ -156,13 +178,12 @@
    * Gets list of games from localStorage
    */
   var list_local_saves = function (rom) {
-    rom = encodeURIComponent(rom);
+    rom = decodeURIComponent(rom);
     try {
       var storage = window.localStorage;
-      var key = 'com.ajay-gandhi.gbajs.save';
-      if (!storage[key]) return [];
+      if (!storage[LOCALSTORAGE_KEY]) return [];
 
-      var parsed_storage = JSON.parse(storage[key]);
+      var parsed_storage = JSON.parse(storage[LOCALSTORAGE_KEY]);
       if (!parsed_storage[rom]) return [];
 
       return Object.keys(parsed_storage[rom]);
