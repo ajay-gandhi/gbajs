@@ -10,7 +10,7 @@ var UserDB = require('./postgres');
 
 var users = new UserDB();
 
-// // Set up express
+// Set up express
 var app = express();
 app.set('port', (process.env.PORT || 8000));
 app.use(bodyParser.urlencoded({ extended: true }));
