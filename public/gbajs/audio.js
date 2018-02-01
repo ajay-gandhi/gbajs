@@ -143,7 +143,9 @@ GameBoyAdvanceAudio.prototype.clear = function() {
 GameBoyAdvanceAudio.prototype.pause = function(paused) {
 	if (this.context) {
 		if (paused) {
-			this.jsAudio.disconnect(this.context.destination);
+			try {
+				this.jsAudio.disconnect(this.context.destination);
+                        } catch (e) {}
 		} else if (this.enabled) {
 			this.jsAudio.connect(this.context.destination);
 		}
