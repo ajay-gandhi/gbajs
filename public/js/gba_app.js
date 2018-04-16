@@ -33,11 +33,6 @@ $(document).on('fully_ready', function () {
     gba.setCanvas(document.getElementById('screen'));
 
     gba.logLevel = gba.LOG_ERROR;
-    // report fps
-    // gba.reportFPS = function (fps) {
-    //   var counter = document.getElementById('fps');
-    //   counter.textContent = Math.floor(fps);
-    // };
 
     loadFile('gbajs/assets/bios.bin', function (bios) {
       gba.setBios(bios);
@@ -262,6 +257,10 @@ function reset() {
   load.onclick = function () {
     document.getElementById('loader').click();
   }
+}
+
+function uploadSavedataPending(file) {
+  runCommands.push(function() { gba.loadSavedataFromFile(file) });
 }
 
 function screenshot() {

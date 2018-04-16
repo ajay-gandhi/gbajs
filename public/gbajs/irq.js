@@ -1,7 +1,5 @@
 function GameBoyAdvanceInterruptHandler() {
-	for (var v in this) {
-		this[v] = this[v];
-	}
+	this.inherit();
 	this.FREQUENCY = 0x1000000;
 
 	this.cpu = null;
@@ -83,6 +81,41 @@ GameBoyAdvanceInterruptHandler.prototype.clear = function() {
 	this.nextEvent = 0;
 	this.springIRQ = false;
 	this.resetSP();
+};
+
+GameBoyAdvanceInterruptHandler.prototype.freeze = function() {
+	return {
+		'enable': this.enable,
+		'enabledIRQs': this.enabledIRQs,
+		'interruptFlags': this.interruptFlags,
+		'dma': this.dma,
+		'timers': this.timers,
+		'nextEvent': this.nextEvent,
+		'springIRQ': this.springIRQ
+	};
+};
+
+GameBoyAdvanceInterruptHandler.prototype.defrost = function(frost) {
+	this.enable = frost.enable;
+	this.enabledIRQs = frost.enabledIRQs;
+	this.interruptFlags = frost.interruptFlags;
+	this.dma = frost.dma;
+	this.timers = frost.timers;
+	this.timersEnabled = 0;
+	if (this.timers[0].enable) {
+		++this.timersEnabled;
+	}
+	if (this.timers[1].enable) {
+		++this.timersEnabled;
+	}
+	if (this.timers[2].enable) {
+		++this.timersEnabled;
+	}
+	if (this.timers[3].enable) {
+		++this.timersEnabled;
+	}
+	this.nextEvent = frost.nextEvent;
+	this.springIRQ = frost.springIRQ;
 };
 
 GameBoyAdvanceInterruptHandler.prototype.updateTimers = function() {
@@ -915,7 +948,7 @@ GameBoyAdvanceInterruptHandler.prototype.rl = function(source, dest, unitsize) {
 			block = this.cpu.mmu.loadU8(sPointer++);
 			while (blockheader-- && remaining) {
 				--remaining;
-				if (uintsize == 2) {
+				if (unitsize == 2) {
 					buffer >>= 8;
 					buffer |= block << 8;
 					if (dPointer & 1) {
@@ -932,7 +965,7 @@ GameBoyAdvanceInterruptHandler.prototype.rl = function(source, dest, unitsize) {
 			while (blockheader-- && remaining) {
 				--remaining;
 				block = this.cpu.mmu.loadU8(sPointer++);
-				if (uintsize == 2) {
+				if (unitsize == 2) {
 					buffer >>= 8;
 					buffer |= block << 8;
 					if (dPointer & 1) {

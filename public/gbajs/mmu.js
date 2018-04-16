@@ -1,7 +1,5 @@
 function MemoryView(memory, offset) {
-	for (var v in this) {
-		this[v] = this[v];
-	}
+	this.inherit();
 	this.buffer = memory;
 	this.view = new DataView(this.buffer, typeof(offset) === "number" ? offset : 0);
 	this.mask = memory.byteLength - 1;
@@ -56,6 +54,9 @@ MemoryView.prototype.invalidatePage = function(address) {};
 MemoryView.prototype.replaceData = function(memory, offset) {
 	this.buffer = memory;
 	this.view = new DataView(this.buffer, typeof(offset) === "number" ? offset : 0);
+	if (this.icache) {
+		this.icache = new Array(this.icache.length);
+	}
 };
 
 function MemoryBlock(size, cacheBits) {
@@ -156,9 +157,7 @@ BIOSView.prototype.store16 = function(offset, value) {};
 BIOSView.prototype.store32 = function(offset, value) {};
 
 function BadMemory(mmu, cpu) {
-	for (var v in this) {
-		this[v] = this[v];
-	}
+	this.inherit();
 	this.cpu = cpu;
 	this.mmu = mmu
 };
@@ -197,9 +196,7 @@ BadMemory.prototype.store32 = function(offset, value) {};
 BadMemory.prototype.invalidatePage = function(address) {};
 
 function GameBoyAdvanceMMU() {
-	for (var v in this) {
-		this[v] = this[v];
-	}
+	this.inherit();
 	this.REGION_BIOS = 0x0;
 	this.REGION_WORKING_RAM = 0x2;
 	this.REGION_WORKING_IRAM = 0x3;
@@ -326,6 +323,18 @@ GameBoyAdvanceMMU.prototype.clear = function() {
 		this.core.io.DMA2CNT_HI >> 1,
 		this.core.io.DMA3CNT_HI >> 1
 	];
+};
+
+GameBoyAdvanceMMU.prototype.freeze = function() {
+	return {
+		'ram': Serializer.prefix(this.memory[this.REGION_WORKING_RAM].buffer),
+		'iram': Serializer.prefix(this.memory[this.REGION_WORKING_IRAM].buffer),
+	};
+};
+
+GameBoyAdvanceMMU.prototype.defrost = function(frost) {
+	this.memory[this.REGION_WORKING_RAM].replaceData(frost.ram);
+	this.memory[this.REGION_WORKING_IRAM].replaceData(frost.iram);
 };
 
 GameBoyAdvanceMMU.prototype.loadBios = function(bios, real) {

@@ -1,7 +1,4 @@
-
-## License
-
-Copyright © 2012 – 2013, Jeffrey Pfau
+Copyright (c) 2012, Jeffrey Pfau
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
